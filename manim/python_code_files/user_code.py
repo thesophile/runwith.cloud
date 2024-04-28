@@ -1,6 +1,6 @@
 from manim import *
 
-class MovingAround(Scene):
+class My_scene_name_ha_ha(Scene):
     def construct(self):
         square = Square(color=BLUE, fill_opacity=1)
 

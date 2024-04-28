@@ -8,20 +8,20 @@
     <title>Execute Python Code</title>
 </head>
 <body>
-    <h1>Execute Python Code</h1>
+    <h1>CloudPy Manim</h1>
     <form method="post"  >
         {% csrf_token %}
-        <label for="code">Enter Python code:</label><br>
+        <label for="code">Enter manim code:</label><br>
         <textarea name="code" id="code" rows="10" cols="50">{{ previous_code }}</textarea><br>
         <input type="submit" value="Execute">
     </form>
     <div>
-        {{result}}
+        <!-- {{result}} -->
     </div>
 
     <div>
         <video controls width="640" height="360">
-            <source src="{{ MEDIA_URL }}videos/user_code/480p15/MovingAround.mp4" type="video/mp4">
+            <source src="{{ MEDIA_URL }}videos/user_code/480p15/{{class_name}}.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>

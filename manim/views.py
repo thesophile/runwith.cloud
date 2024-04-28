@@ -6,6 +6,7 @@ from io import StringIO
 import sys
 import os
 import subprocess
+import re
 
 def execute_code(request):
     previous_code = request.POST.get('code', '')  
@@ -13,6 +14,21 @@ def execute_code(request):
         code = request.POST.get('code', '')
         try:
             python_file = save_python_code_to_file(code)
+
+            # find Scene name
+            pattern = r"class\s+(\w+)\(Scene\):"
+
+            for line in code.split('\n'):
+                # Use regular expression to find the class name
+                match = re.match(pattern, line)
+                if match:
+                    # If a match is found, extract the class name
+                    class_name = match.group(1)
+                    #print("Class name:", class_name)
+                    break  # Stop searching after the first match
+            else:
+                print("No match found.")
+
             
             #print(python_file)
             result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
@@ -40,12 +56,10 @@ def execute_code(request):
         context = {'result':result_message,
                    'previous_code': previous_code,
                    'MEDIA_URL': settings.MEDIA_URL,
+                   'class_name':class_name,
         }
         return render(request, 'run.html',context)       
-    from django.template.loader import select_template
-
-    template = select_template(['run.html'])
-    print("Template path:", template.origin.name)     
+     
     return render(request, 'run.html', {'previous_code': previous_code,'MEDIA_URL': settings.MEDIA_URL,})
 
 
