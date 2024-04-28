@@ -36,7 +36,8 @@ def execute_code(request):
             # Check if the command was successful (exit code 0)
             if result.returncode == 0:
                 output = result.stdout
-                result_message = f"Shell command executed successfully. Output:\n{output}"
+                result_message = ''
+                #result_message = f"Shell command executed successfully. Output:\n{output}"
             else:
                 error_message = result.stderr
                 result_message = f"Error executing shell command: {error_message}"
@@ -53,7 +54,7 @@ def execute_code(request):
         #     sys.stdout = stdout  # Restore original stdout
         # except Exception as e:
         #     result = f"Error executing code: {e}"
-        context = {'result':result_message,
+        context = {'result_message':result_message,
                    'previous_code': previous_code,
                    'MEDIA_URL': settings.MEDIA_URL,
                    'class_name':class_name,
