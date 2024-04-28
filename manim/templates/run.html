@@ -1,4 +1,5 @@
 <!-- your_template.html -->
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,25 +7,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Execute Python Code</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <h1>CloudPy Manim</h1>
-    <form method="post"  >
-        {% csrf_token %}
-        <label for="code">Enter manim code:</label><br>
-        <textarea name="code" id="code" rows="10" cols="50">{{ previous_code }}</textarea><br>
-        <input type="submit" value="Execute">
-    </form>
-    <div>
-        <!-- {{result}} -->
-    </div>
+    <div class="container">
+        <form method="post" class="item" >
+            {% csrf_token %}
+            <label for="code">Enter manim code:</label><br>
+            <textarea name="code" id="code" rows="10" cols="50">{{ previous_code }}</textarea><br>
+            <input type="submit" value="Execute">
+        </form>
+         
+            <!-- {{result}} -->
+         
 
-    <div>
-        <video controls width="640" height="360">
-            <source src="{{ MEDIA_URL }}videos/user_code/480p15/{{class_name}}.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <div class="item">
+            <video controls width="640" height="360">
+                <source src="{{ MEDIA_URL }}videos/user_code/480p15/{{class_name}}.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        
     </div>
-     
 </body>
 </html>
