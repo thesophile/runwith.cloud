@@ -1,10 +1,11 @@
 ffmpeg 
+Django
+
 asgiref
 click
 cloup
 colorama
 decorator
-Django
 glcontext
 isosurfaces
 manim
