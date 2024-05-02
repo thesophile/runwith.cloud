@@ -32,13 +32,25 @@ def execute_code(request):
             
             #print(python_file)
 
-            #Execute manim command
-            shell_command = """
-                source env/bin/activate
-                cd CloudPy
-            """
-            subprocess.run(shell_command, shell=True)
-            result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
+            # Activate the virtual environment
+            activate_command = "source env/bin/activate && "
+            # Command to run manimce
+            manimce_command = ['manimce', '-ql', python_file]
+            
+            # Combine the activation command and the manimce command
+            combined_command = activate_command + ' '.join(manimce_command)
+            
+            # Run the combined command
+            result = subprocess.run(combined_command, shell=True, capture_output=True, text=True)
+    
+
+            # #Execute manim command
+            # shell_command = """
+            #     source env/bin/activate
+            #     cd CloudPy
+            # """
+            # subprocess.run(shell_command, shell=True, text=True)
+            # result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
             
             # Check if the command was successful (exit code 0)
             if result.returncode == 0:
