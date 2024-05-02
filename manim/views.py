@@ -31,6 +31,13 @@ def execute_code(request):
 
             
             #print(python_file)
+
+            #Execute manim command
+            shell_command = """
+                source env/bin/activate
+                cd CloudPy
+            """
+            subprocess.run(shell_command, shell=True)
             result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
             
             # Check if the command was successful (exit code 0)
