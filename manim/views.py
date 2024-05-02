@@ -29,19 +29,10 @@ def execute_code(request):
             else:
                 print("No match found.")
 
-            
-            #print(python_file)
 
-            # Activate the virtual environment
-            activate_command = "source env/bin/activate && "
-            # Command to run manimce
-            manimce_command = ['manimce', '-ql', python_file]
-            
-            # Combine the activation command and the manimce command
-            combined_command = activate_command + ' '.join(manimce_command)
             
             # Run the combined command
-            result = subprocess.run(combined_command, shell=True, capture_output=True, text=True)
+            result = subprocess.run("./run_script.sh", shell=True, capture_output=True)
     
 
             # #Execute manim command
