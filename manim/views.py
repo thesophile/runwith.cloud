@@ -49,8 +49,7 @@ def execute_code(request):
                 result_message = ''
                 #result_message = f"Shell command executed successfully. Output:\n{output}"
             else:
-                # error_message = result.stderr
-                error_message = "blah bh blaha"
+                error_message = result.stderr
                 result_message = f"Error executing shell command: {error_message}"
         except Exception as e:
             result_message = f"Error executing shell command: {e}"
