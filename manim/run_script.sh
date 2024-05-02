@@ -4,4 +4,4 @@
 source env/bin/activate
 
 # Run your Python script
-manimce -pql python_file
+manim -pql python_file
