@@ -42,8 +42,10 @@ def execute_code(request):
             # """
             # subprocess.run(shell_command, shell=True, text=True)
 
+            activate_script = '/home/ubuntu/env/bin/activate'
+            result = subprocess.run(['bash', '-c', f'source {activate_script} && manim -ql {python_file}'], capture_output=True,text=True)
              
-            result = subprocess.run(["bash","-c","source", "/home/ubuntu/env/bin/activate"], capture_output=True,text=True)
+            # result = subprocess.run(["bash","-c","source", "/home/ubuntu/env/bin/activate"], capture_output=True,text=True)
 
             #result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
             
