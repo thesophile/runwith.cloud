@@ -32,7 +32,7 @@ def execute_code(request):
 
             
             # Run the combined command
-            result = subprocess.run("run_script.sh", shell=True, capture_output=True)
+            # result = subprocess.run("run_script.sh", shell=True, capture_output=True)
     
 
             # #Execute manim command
@@ -41,7 +41,11 @@ def execute_code(request):
             #     cd CloudPy
             # """
             # subprocess.run(shell_command, shell=True, text=True)
-            # result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
+
+             
+            subprocess.run(["source", "~/env/bin/activate"], shell=True, check=True)
+
+            result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
             
             # Check if the command was successful (exit code 0)
             if result.returncode == 0:
