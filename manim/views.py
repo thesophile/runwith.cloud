@@ -16,7 +16,8 @@ def execute_code(request):
             python_file = save_python_code_to_file(code)
 
             # find Scene name
-            pattern = r"class\s+(\w+)\(Scene\):"
+            pattern = r"class\s+(\w+)\s*\("
+            # pattern = r"class\s+(\w+)\(Scene\):"
 
             for line in code.split('\n'):
                 # Use regular expression to find the class name
@@ -28,6 +29,7 @@ def execute_code(request):
                     break  # Stop searching after the first match
             else:
                 print("No match found.")
+                
 
 
             
