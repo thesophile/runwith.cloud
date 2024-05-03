@@ -43,9 +43,9 @@ def execute_code(request):
             # subprocess.run(shell_command, shell=True, text=True)
 
              
-            subprocess.run(["source", "~/env/bin/activate"], shell=True, check=True)
+            result = subprocess.run(["source", "~/env/bin/activate"], capture_output=True,text=True)
 
-            result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
+            #result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
             
             # Check if the command was successful (exit code 0)
             if result.returncode == 0:
