@@ -12,24 +12,26 @@ def execute_code(request):
     previous_code = request.POST.get('code', '')  
     if request.method == 'POST':
         code = request.POST.get('code', '')
+        python_file = save_python_code_to_file(code)
+
+        # find Scene name
+        pattern = r"class\s+(\w+)\s*\("
+        # pattern = r"class\s+(\w+)\(Scene\):"
+
+        for line in code.split('\n'):
+            # Use regular expression to find the class name
+            match = re.match(pattern, line)
+            if match:
+                # If a match is found, extract the class name
+                class_name = match.group(1)
+                #print("Class name:", class_name)
+                break  # Stop searching after the first match
+        else:
+            print("No match found.")
+            class_name="undefined"
+
         try:
-            python_file = save_python_code_to_file(code)
-
-            # find Scene name
-            pattern = r"class\s+(\w+)\s*\("
-            # pattern = r"class\s+(\w+)\(Scene\):"
-
-            for line in code.split('\n'):
-                # Use regular expression to find the class name
-                match = re.match(pattern, line)
-                if match:
-                    # If a match is found, extract the class name
-                    class_name = match.group(1)
-                    #print("Class name:", class_name)
-                    break  # Stop searching after the first match
-            else:
-                print("No match found.")
-                class_name="undefined"
+            
 
 
 
