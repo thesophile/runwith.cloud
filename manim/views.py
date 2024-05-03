@@ -43,7 +43,7 @@ def execute_code(request):
             # subprocess.run(shell_command, shell=True, text=True)
 
              
-            result = subprocess.run(["source", "~/env/bin/activate"], capture_output=True,text=True)
+            result = subprocess.run([". ~/env/bin/activate"], capture_output=True,text=True)
 
             #result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
             
