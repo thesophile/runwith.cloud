@@ -9,53 +9,39 @@ import subprocess
 import re
 
 def execute_code(request):
+    #saving the entered code
     previous_code = request.POST.get('code', '')  
+
     if request.method == 'POST':
+        #save the code as a python file 
         code = request.POST.get('code', '')
+        python_file = save_python_code_to_file(code)
+
+        # find class name
+        # we need this because the resultant video is saved in a folder named after class name.  
+        pattern = r"class\s+(\w+)\s*\(" # example: class class_name(scene)
+
+        for line in code.split('\n'):
+            # Use regular expression to find the class name
+            match = re.match(pattern, line)
+            if match:
+                # If a match is found, extract the class name
+                class_name = match.group(1)
+                #print("Class name:", class_name)
+                break  # Stop searching after the first match
+        else:
+            print("No match found.")
+            class_name="undefined"
+
         try:
-            python_file = save_python_code_to_file(code)
-
-            # find Scene name
-            pattern = r"class\s+(\w+)\s*\("
-            # pattern = r"class\s+(\w+)\(Scene\):"
-
-            for line in code.split('\n'):
-                # Use regular expression to find the class name
-                match = re.match(pattern, line)
-                if match:
-                    # If a match is found, extract the class name
-                    class_name = match.group(1)
-                    #print("Class name:", class_name)
-                    break  # Stop searching after the first match
-            else:
-                print("No match found.")
-                class_name="undefined"
-
-
-
-            
-            # Run the combined command
-            # result = subprocess.run("run_script.sh", shell=True, capture_output=True)
-    
-
-            # #Execute manim command
-            # shell_command = """
-            #     source env/bin/activate
-            #     cd CloudPy
-            # """
-            # subprocess.run(shell_command, shell=True, text=True)
-
+            # execute the python file using manim    
             activate_script = '/home/ubuntu/env/bin/activate'
             result = subprocess.run(['bash', '-c', f'source {activate_script} && manim -ql {python_file}'], capture_output=True,text=True)
-             
-            # result = subprocess.run(["bash","-c","source", "/home/ubuntu/env/bin/activate"], capture_output=True,text=True)
-
-            #result = subprocess.run(['manimce','-ql', python_file], capture_output=True, text=True)
-            
+          
             # Check if the command was successful (exit code 0)
             if result.returncode == 0:
                 output = result.stdout
-                result_message = ''
+                result_message = '' #we don't need error message if command is executed successfully
                 #result_message = f"Shell command executed successfully. Output:\n{output}"
             else:
                 error_message = result.stderr
@@ -65,14 +51,6 @@ def execute_code(request):
 
 
 
-        #     # Capture the output of the executed code
-        #     stdout = sys.stdout
-        #     sys.stdout = StringIO()  # Redirect stdout to a StringIO object
-        #     exec(code, globals(), locals())
-        #     result = sys.stdout.getvalue()  # Get the output of the executed code
-        #     sys.stdout = stdout  # Restore original stdout
-        # except Exception as e:
-        #     result = f"Error executing code: {e}"
         context = {'result_message':result_message,
                    'previous_code': previous_code,
                    'MEDIA_URL': settings.MEDIA_URL,
