@@ -8,11 +8,28 @@ import os
 import subprocess
 import re
 
+from datetime import datetime, timedelta
+
+def delete_old_files(media_dir):
+    threshold_time = datetime.now() - timedelta(minutes=10)
+
+    for filename in os.listdir(media_dir):
+        filepath = os.path.join(media_dir, filename)
+        modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
+        if modified_time < threshold_time:
+            os.remove(filepath)
+            print(f'Deleted {filename}')
+
+
 def execute_code(request):
     #saving the entered code
     previous_code = request.POST.get('code', '')  
 
     if request.method == 'POST':
+        #delete old files
+        media_dir = os.path.join(settings.BASE_DIR, 'manim')
+        delete_old_files(media_dir)
+
         #save the code as a python file 
         code = request.POST.get('code', '')
         python_file = save_python_code_to_file(code)
