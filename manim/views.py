@@ -50,15 +50,19 @@ def execute_code(request):
             result_message = f"Error executing shell command: {e}"
 
 
-
+        #after HTTP request
         context = {'result_message':result_message,
                    'previous_code': previous_code,
                    'MEDIA_URL': settings.MEDIA_URL,
                    'class_name':class_name,
-        }
-        return render(request, 'run.html',context)       
-     
-    return render(request, 'run.html', {'previous_code': previous_code,'MEDIA_URL': settings.MEDIA_URL,})
+                }
+        return render(request, 'run.html',context)  
+         
+    #before HTTP request
+    context = {'previous_code': previous_code,
+               'MEDIA_URL': settings.MEDIA_URL,
+            }
+    return render(request, 'run.html',context )
 
 
 def save_python_code_to_file(code):
