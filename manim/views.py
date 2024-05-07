@@ -10,15 +10,40 @@ import re
 
 from datetime import datetime, timedelta
 
+# def delete_old_files(media_dir):
+#     threshold_time = datetime.now() - timedelta(minutes=10)
+
+#     for filename in os.listdir(media_dir):
+#         filepath = os.path.join(media_dir, filename)
+#         modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
+#         if modified_time < threshold_time:
+#             os.remove(filepath)
+#             print(f'Deleted {filename}')
+
 def delete_old_files(media_dir):
     threshold_time = datetime.now() - timedelta(minutes=10)
 
-    for filename in os.listdir(media_dir):
-        filepath = os.path.join(media_dir, filename)
-        modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
-        if modified_time < threshold_time:
-            os.remove(filepath)
-            print(f'Deleted {filename}')
+    for root, dirs, files in os.walk(media_dir):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
+            if modified_time < threshold_time:
+                os.remove(filepath)
+                print(f'Deleted {filepath}')
+
+        for dir_name in dirs:
+            dir_path = os.path.join(root, dir_name)
+            if dir_name == "partial_movie_files":
+                for sub_root, sub_dirs, sub_files in os.walk(dir_path):
+                    for sub_filename in sub_files:
+                        sub_filepath = os.path.join(sub_root, sub_filename)
+                        sub_modified_time = datetime.fromtimestamp(os.path.getmtime(sub_filepath))
+                        if sub_modified_time < threshold_time:
+                            os.remove(sub_filepath)
+                            print(f'Deleted {sub_filepath}')
+            else:
+                # Optionally, you can add logic here to skip other directories
+                pass
 
 
 def execute_code(request):
