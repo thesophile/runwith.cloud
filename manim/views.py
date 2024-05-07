@@ -35,12 +35,12 @@ def delete_old_files(media_dir):
             dir_path = os.path.join(root, dir_name)
             if dir_name == "partial_movie_files":
                 for sub_root, sub_dirs, sub_files in os.walk(dir_path):
-                    for sub_filename in sub_files:
-                        sub_filepath = os.path.join(sub_root, sub_filename)
-                        sub_modified_time = datetime.fromtimestamp(os.path.getmtime(sub_filepath))
+                    for sub_dir_name in sub_dirs:
+                        sub_dir_path = os.path.join(sub_root, sub_dir_name)
+                        sub_modified_time = datetime.fromtimestamp(os.path.getmtime(sub_dir_path))
                         if sub_modified_time < threshold_time:
-                            os.remove(sub_filepath)
-                            print(f'Deleted {sub_filepath}')
+                            os.remove(sub_dir_path)
+                            print(f'Deleted {sub_dir_path}')
             else:
                 # Optionally, you can add logic here to skip other directories
                 pass
