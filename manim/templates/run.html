@@ -1,4 +1,3 @@
-<!-- your_template.html -->
 {% load static %}
 
 <!DOCTYPE html>
@@ -6,29 +5,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudPy</title>
+    <title>CloudPy Manim</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333; /* Dark gray text color */
+        }
+        h1 {
+            background-color: #5183a0; /* Custom blue color */
+            color: #fff; /* White text color */
+            padding: 20px;
+            text-align: center;
+            margin-top: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff; /* White background color */
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .item {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        input[type="submit"] {
+            background-color: #5183a0; /* Custom blue color */
+            color: #fff; /* White text color */
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input[type="submit"]:hover {
+            background-color: #3a6380; /* Darker shade of blue */
+        }
+        video, img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        p {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <h1>CloudPy Manim</h1>
     <div class="container">
         <form method="post" class="item" >
             {% csrf_token %}
-            <label for="code">Enter manim code:</label><br>
-            <textarea name="code" id="code" rows="10" cols="50">{{ previous_code }}</textarea><br>
+            <label for="code">Enter Manim code:</label><br>
+            <textarea name="code" id="code" rows="20" cols="50">{{ previous_code }}</textarea><br>
             <input type="submit" value="Execute">
         </form>
-         
-            
-         
 
         <div class="item">
-             
-            {{result_message}}
-
+            {{ result_message }}
 
             {% if "self.play" in previous_code %}
-                <video controls width="640" height="360">
+                <video controls>
                     <source src="{{ MEDIA_URL }}videos/user_code/480p15/{{ class_name }}.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -37,20 +88,7 @@
             {% else %}
                 <p>No output available</p>
             {% endif %}
-
-
-
-
-
-<!--              
-            <video controls width="640" height="360">
-                <source src="{{ MEDIA_URL }}videos/user_code/480p15/{{class_name}}.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video> -->
-
-
         </div>
-        
     </div>
 </body>
 </html>
