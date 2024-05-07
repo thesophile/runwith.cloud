@@ -27,8 +27,8 @@ def execute_code(request):
 
     if request.method == 'POST':
         #delete old files
-        image_dir = os.path.join(settings.BASE_DIR, 'media')
-        delete_old_files(media_dir)
+        video_dir = os.path.join(settings.BASE_DIR, 'media','videos','user_code','480p15')
+        delete_old_files(video_dir)
 
         #save the code as a python file 
         code = request.POST.get('code', '')
