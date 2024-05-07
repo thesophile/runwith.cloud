@@ -7,7 +7,7 @@ import sys
 import os
 import subprocess
 import re
-
+import shutil
 from datetime import datetime, timedelta
 
 # def delete_old_files(media_dir):
@@ -39,8 +39,8 @@ def delete_old_files(media_dir):
                         sub_dir_path = os.path.join(sub_root, sub_dir_name)
                         sub_modified_time = datetime.fromtimestamp(os.path.getmtime(sub_dir_path))
                         if sub_modified_time < threshold_time:
-                            os.remove(sub_dir_path)
-                            print(f'Deleted {sub_dir_path}')
+                            shutil.rmtree(sub_dir_path)
+                            print(f'Deleted directory {sub_dir_path}')
             else:
                 # Optionally, you can add logic here to skip other directories
                 pass
