@@ -1,4 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:C:/Users/Aadarsh/Documents/Codes/django/CloudPy/CloudPy/media/videos/user_code/480p15/partial_movie_files/MovingDots/1185818338_1319928151_1002368975.mp4'
-file 'file:C:/Users/Aadarsh/Documents/Codes/django/CloudPy/CloudPy/media/videos/user_code/480p15/partial_movie_files/MovingDots/624642324_2843732495_4152433353.mp4'
-file 'file:C:/Users/Aadarsh/Documents/Codes/django/CloudPy/CloudPy/media/videos/user_code/480p15/partial_movie_files/MovingDots/624642324_1704852926_7017254.mp4'

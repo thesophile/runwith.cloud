@@ -1,3 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/home/ubuntu/CloudPy/media/videos/user_code/480p15/partial_movie_files/SineCurveUnitCircle/1185818338_3794438852_3267982395.mp4'
-file 'file:/home/ubuntu/CloudPy/media/videos/user_code/480p15/partial_movie_files/SineCurveUnitCircle/624642324_1704852926_2391618379.mp4'

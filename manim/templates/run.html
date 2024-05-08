@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudPy Manim</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,6 +23,8 @@
             margin-top: 0;
         }
         .container {
+            display: flex;
+            /* flex-wrap: wrap; */
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
@@ -30,14 +32,29 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        
         .item {
-            margin-bottom: 20px;
+            margin: 5px;
+            /* margin-bottom: 20px; */
         }
+
+        .output-item{
+            display: flex; 
+            align-items: center;      
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+            flex-direction: column;
+            }
+        }
+
+
         label {
             font-weight: bold;
         }
         textarea {
-            width: 100%;
+            max-width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -55,11 +72,11 @@
             background-color: #3a6380; /* Darker shade of blue */
         }
         video, img {
-            width: 100%;
+            /* width: 100%; */
             height: auto;
             display: block;
             margin: 0 auto;
-            /* max-width: 100%; */
+            max-width: 100%;
         }
         p {
             text-align: center;
@@ -76,7 +93,7 @@
             <input type="submit" value="Execute">
         </form>
 
-        <div class="item">
+        <div class="item output-item">
             {{ result_message }}
 
             {% if "self.play" in previous_code %}
