@@ -55,10 +55,11 @@
             background-color: #3a6380; /* Darker shade of blue */
         }
         video, img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
             display: block;
             margin: 0 auto;
+            /* max-width: 100%; */
         }
         p {
             text-align: center;
@@ -77,6 +78,11 @@
 
         <div class="item">
             {{ result_message }}
+
+            <!-- placeholder -->
+            {% if placeholder %}
+                <img src="{% static 'img/placeholder.png' %}" alt="Image">
+            {% endif %}
 
             {% if "self.play" in previous_code %}
                 <video controls>

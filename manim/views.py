@@ -103,8 +103,10 @@ def execute_code(request):
         return render(request, 'run.html',context)  
          
     #before HTTP request
+    placeholder = True
     context = {'previous_code': previous_code,
                'MEDIA_URL': settings.MEDIA_URL,
+               'placeholder':placeholder,
             }
     return render(request, 'run.html',context )
 
