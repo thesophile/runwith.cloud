@@ -81,6 +81,9 @@ def execute_code(request):
             # execute the python file using manim    
             activate_script = '/home/ubuntu/env/bin/activate'
             result = subprocess.run(['bash', '-c', f'source {activate_script} && manim -ql {python_file}'], capture_output=True,text=True)
+
+            # #uncomment to run locally (and comment above lines) 
+            # result = subprocess.run([f'manim -ql {python_file}'], capture_output=True,text=True)
           
             # Check if the command was successful (exit code 0)
             if result.returncode == 0:
