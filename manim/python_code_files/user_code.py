@@ -1,11 +1,10 @@
-from manim import *
+ from manim import *
 
-class FixedInFrameMObjectTest(ThreeDScene):
+class VectorArrow(Scene):
     def construct(self):
-        axes = ThreeDAxes()
-        self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
-        text3d = Text("This is a 3D text")
-        self.add_fixed_in_frame_mobjects(text3d)
-        text3d.to_corner(UL)
-        self.add(axes)
-        self.wait()
+        dot = Dot(ORIGIN)
+        arrow = Arrow(ORIGIN, [2, 2, 0], buff=0)
+        numberplane = NumberPlane()
+        origin_text = Text('(0, 0)').next_to(dot, DOWN)
+        tip_text = Text('(2, 2)').next_to(arrow.get_end(), RIGHT)
+        self.add(numberplane, dot, arrow, origin_text, tip_text)
