@@ -135,7 +135,7 @@
             {% csrf_token %}
             <label for="code">Enter Manim code:</label><br>
             <textarea name="code" id="code" rows="20" cols="50">{{ previous_code }}</textarea><br>
-            <input type="submit" value="Execute" onclick="ShowSpinner()">
+            <input type="submit" value="Execute" onclick="ShowSpinner() HidePlaceholder()">
         </form>
 
         <div class="item output-item">
