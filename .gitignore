@@ -1,1 +1,4 @@
 *.cpython-311.pyc
+
+media/
+manim/python_code_files/
