@@ -10,20 +10,14 @@ import re
 import shutil
 from datetime import datetime, timedelta
 
-# def delete_old_files(media_dir):
-#     threshold_time = datetime.now() - timedelta(minutes=10)
 
-#     for filename in os.listdir(media_dir):
-#         filepath = os.path.join(media_dir, filename)
-#         modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
-#         if modified_time < threshold_time:
-#             os.remove(filepath)
-#             print(f'Deleted {filename}')
 
 def delete_old_files(media_dir):
     threshold_time = datetime.now() - timedelta(minutes=10)
 
     for root, dirs, files in os.walk(media_dir):
+
+        #delete files that are older than 10 minutes
         for filename in files:
             filepath = os.path.join(root, filename)
             modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
@@ -31,6 +25,7 @@ def delete_old_files(media_dir):
                 os.remove(filepath)
                 print(f'Deleted {filepath}')
 
+        #delete files in the folder "partial_movie _files" that are older than 10 minutes
         for dir_name in dirs:
             dir_path = os.path.join(root, dir_name)
             if dir_name == "partial_movie_files":
@@ -42,7 +37,7 @@ def delete_old_files(media_dir):
                             shutil.rmtree(sub_dir_path)
                             print(f'Deleted directory {sub_dir_path}')
             else:
-                # Optionally, you can add logic here to skip other directories
+                # No other directory to deal with, so pass 
                 pass
 
 
