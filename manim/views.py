@@ -9,36 +9,127 @@ import subprocess
 import re
 import shutil
 from datetime import datetime, timedelta
+import time
+from django.http import JsonResponse
+from .utils import *
 
 
 
-def delete_old_files(media_dir):
-    threshold_time = datetime.now() - timedelta(minutes=10)
 
-    for root, dirs, files in os.walk(media_dir):
 
-        #delete files that are older than 10 minutes
-        for filename in files:
-            filepath = os.path.join(root, filename)
-            modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
-            if modified_time < threshold_time:
-                os.remove(filepath)
-                print(f'Deleted {filepath}')
 
-        #delete files in the folder "partial_movie _files" that are older than 10 minutes
-        for dir_name in dirs:
-            dir_path = os.path.join(root, dir_name)
-            if dir_name == "partial_movie_files":
-                for sub_root, sub_dirs, sub_files in os.walk(dir_path):
-                    for sub_dir_name in sub_dirs:
-                        sub_dir_path = os.path.join(sub_root, sub_dir_name)
-                        sub_modified_time = datetime.fromtimestamp(os.path.getmtime(sub_dir_path))
-                        if sub_modified_time < threshold_time:
-                            shutil.rmtree(sub_dir_path)
-                            print(f'Deleted directory {sub_dir_path}')
-            else:
-                # No other directory to deal with, so pass 
-                pass
+
+
+
+# def run_docker_command(class_name):
+#     image_name = 'manimcommunity/manim'
+#     base_dir = os.path.join(settings.BASE_DIR)  
+#     user_code = 'user_code.py'
+#     try:
+#         result = run_manim_command(image_name, base_dir, user_code, class_name)
+#         return JsonResponse(result)
+#     except Exception as e:
+#         return JsonResponse({'status': 'error', 'error': str(e)})
+
+def run_manim(class_name):
+    try:
+
+        base_dir = os.path.join(settings.BASE_DIR)  
+
+        activate_script = f'. {base_dir}/manimenv/bin/activate'
+
+        manim_command = f'firejail --net=none manim -ql {base_dir}/manim/python_code_files/user_code.py -o {base_dir}/media/{class_name}'  
+
+        full_command = f'{activate_script} && {manim_command}'
+
+        
+
+        print(f"Running Manim command: {full_command}")
+
+        result = subprocess.run(
+            full_command,
+            shell=True, 
+            capture_output=True, 
+            text=True
+            )
+
+        # stdout, stderr = process.communicate()
+
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
+
+
+
+        # while True:
+        #     if check_file_exists(class_name):
+        #         break
+        #     print(check_file_exists(class_name))
+        #     time.sleep(2)    
+            
+
+
+        # print('Removing container...')
+        # os.system('sudo docker rm -f docker_container')
+
+        # Proceed to the next step
+        # output = result.stdout
+        print("Proceeding to the next step...")
+        result_message = ''
+        return result_message
+
+    except subprocess.CalledProcessError as e:
+        # Handle the case when the command returns a non-zero exit code
+        print(" command failed with return code:", e.returncode)
+        print(e.stderr)
+        result_message = e.stderr
+        return result_message
+    except Exception as e:
+        # Handle any other exceptions that may occur
+        print("An error occurred:", e)
+        result_message = e
+        return result_message
+        
+# --private={base_dir}/sandbox --private={base_dir}/manim/python_code_files --private={base_dir}/media --private={base_dir}/manimenv
+
+# manim_command = f'sudo docker run --name docker_container -v $(pwd)/manim/python_code_files:/mnt/code -v $(pwd)/media:/mnt/output manim-image manim -ql /mnt/code/user_code.py -o /mnt/output/just_name'
+        
+
+        # manim_command = f'sudo docker run -d --rm -v {base_dir}/manim/python_code_files:/mnt/code -v {base_dir}/media:/mnt/output manim-image manim -ql /mnt/code/user_code.py -o /mnt/output/{class_name}'
+
+        
+
+        # test_command = ['sudo','docker','run','--rm','-v',f'{base_dir}/manim/python_code_files:/mnt/code','-v',f'{base_dir}/media:/mnt/output','manim-image','manim','-ql','/mnt/code/user_code.py','-o',f'/mnt/output/{class_name}']
+
+        # test_command = ['docker','run','manimcommunity/manim']
+
+        
+
+        # process = subprocess.Popen(
+        #     command,
+        #     stdout=subprocess.PIPE, 
+        #     stderr=subprocess.PIPE
+        #     )
+
+        # print(f'command list: {command.split()}')
+
+        # full_command = command.split()
+
+# def run_docker_command():
+
+#     class_name = "demo_classname"
+#     image_name = 'manimcommunity/manim'
+#     base_dir = os.path.join(settings.BASE_DIR)  
+#     user_code = 'user_code.py'
+#     try:
+#         run_manim_command(image_name, base_dir, user_code, class_name)
+#         result_message = ''
+
+#     except Exception as e:
+#         result_message = f"Error executing shell command: {e}"
+
+#     return result_message    
+
+
 
 
 def execute_code(request):
@@ -46,57 +137,29 @@ def execute_code(request):
     previous_code = request.POST.get('code', '')  
 
     if request.method == 'POST':
+        processsed = False
         #delete old files
-        video_dir = os.path.join(settings.BASE_DIR, 'media','videos','user_code','480p15')
-        image_dir = os.path.join(settings.BASE_DIR, 'media','images','user_code')
-        delete_old_files(video_dir)
-        delete_old_files(image_dir)
+        media_dir = os.path.join(settings.BASE_DIR, 'media')
+
+        delete_old_files(media_dir)
 
         #save the code as a python file 
         code = request.POST.get('code', '')
         python_file = save_python_code_to_file(code)
 
         # find class name
-        # we need this because the resultant video is saved in a folder named after class name.  
-        pattern = r"class\s+(\w+)\s*\(" # example: class class_name(scene)
+        class_name = find_class_name(code) # we need this because the resultant video is saved in a folder named after class name. 
 
-        for line in code.split('\n'):
-            # Use regular expression to find the class name
-            match = re.match(pattern, line)
-            if match:
-                # If a match is found, extract the class name
-                class_name = match.group(1)
-                #print("Class name:", class_name)
-                break  # Stop searching after the first match
-        else:
-            print("No match found.")
-            class_name="undefined"
+        print(f'class name: {class_name}')
 
-        try:
-            # execute the python file using manim    
-            activate_script = '/home/ubuntu/env/bin/activate'
-            result = subprocess.run(['bash', '-c', f'source {activate_script} && manim -ql {python_file}'], capture_output=True,text=True)
-
-            # #uncomment to run locally (and comment above lines) 
-            # result = subprocess.run([f'manim -ql {python_file}'], capture_output=True,text=True)
-          
-            # Check if the command was successful (exit code 0)
-            if result.returncode == 0:
-                output = result.stdout
-                result_message = '' #we don't need error message if command is executed successfully
-                #result_message = f"Shell command executed successfully. Output:\n{output}"
-            else:
-                error_message = result.stderr
-                result_message = f"Error executing shell command: {error_message}"
-        except Exception as e:
-            result_message = f"Error executing shell command: {e}"
-
+        result_message = run_manim(class_name)        
 
         #after HTTP request
         context = {'result_message':result_message,
                    'previous_code': previous_code,
                    'MEDIA_URL': settings.MEDIA_URL,
                    'class_name':class_name,
+                   'placeholder': False,
                 }
         return render(request, 'run.html',context)  
          
@@ -105,21 +168,8 @@ def execute_code(request):
     context = {'previous_code': previous_code,
                'MEDIA_URL': settings.MEDIA_URL,
                'placeholder':placeholder,
+               'processed' : False
             }
     return render(request, 'run.html',context )
 
 
-def save_python_code_to_file(code):
-    # Define the directory where Python files will be saved
-    app_dir = os.path.join(settings.BASE_DIR, 'manim')
-    save_dir = os.path.join(app_dir, 'python_code_files')
-    os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
-
-    # Generate a unique filename for the Python file
-    filename = os.path.join(save_dir, 'user_code.py')
-
-    # Write the user's Python code to the file
-    with open(filename, 'w') as file:
-        file.write(code)
-
-    return filename

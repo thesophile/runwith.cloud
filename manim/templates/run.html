@@ -119,6 +119,7 @@
         width: 60px;
         height: 60px;
         animation: spin 2s linear infinite;
+        margin-bottom:30px;
         display: none; /* Initially hidden */
         }
 
@@ -141,23 +142,26 @@
         <div class="item output-item">
             {{ result_message }}
 
-            {% if not result %}
+            <!-- if not processed -->
+            {% if not result_message %} 
                 <div id="spinner" class="spinner"></div>
             {% endif %}
 
-            {% if "self.play" in previous_code %}
+            {% if placeholder %}
+                <img src="{% static 'img/placeholder.png' %}" alt="Image" id="placeholder">
+                
+            {% elif "self.play" in previous_code %}
                 <video controls>
-                    <source src="{{ MEDIA_URL }}videos/user_code/480p15/{{ class_name }}.mp4" type="video/mp4">
+                    <source src="{{ MEDIA_URL }}{{ class_name }}.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
-                <a href="{{ MEDIA_URL }}videos/user_code/480p15/{{ class_name }}.mp4" class="download-btn" download>Download</a>
+                <a href="{{ MEDIA_URL }}{{ class_name }}.mp4" class="download-btn" download>Download</a>
 
             {% elif "self.add" in previous_code %}
-                <img src="{{ MEDIA_URL }}images/user_code/{{ class_name }}_ManimCE_v0.18.1.png" alt="Image">
-                <a href="{{ MEDIA_URL }}images/user_code/{{ class_name }}_ManimCE_v0.18.1.png" class="download-btn" download>Download</a>
+                <img src="{{ MEDIA_URL }}{{ class_name }}.png" alt="Image">
+                <a href="{{ MEDIA_URL }}{{ class_name }}.png" class="download-btn" download>Download</a>
 
-            {% elif placeholder %}
-                <img src="{% static 'img/placeholder.png' %}" alt="Image" id="placeholder">
+
                
             {% else %}
                 <p>No output available</p>
