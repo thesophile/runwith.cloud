@@ -75,7 +75,7 @@ def run_manim(class_name):
         # output = result.stdout
         
         print("Proceeding to the next step...")
-        result_message = base_dir
+        result_message = ''
         return result_message
 
     except subprocess.CalledProcessError as e:
