@@ -151,6 +151,8 @@
                 <img src="{% static 'img/placeholder.png' %}" alt="Image" id="placeholder">
                 
             {% elif "self.play" in previous_code %}
+                <p>MEDIA_URL: {{ MEDIA_URL }}</p>
+                
                 <video controls>
                     <source src="{{ MEDIA_URL }}{{ class_name }}.mp4" type="video/mp4">
                     Your browser does not support the video tag.
