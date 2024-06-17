@@ -150,7 +150,7 @@
             {% if placeholder %}
                 <img src="{% static 'img/placeholder.png' %}" alt="Image" id="placeholder">
                 
-            {% elif "self.play" in previous_code %}
+            {% elif "self.play" in previous_code or "self.wait" in previous_code%}
                 
                 <video controls>
                     <source src="{{ MEDIA_URL }}{{ class_name }}.mp4" type="video/mp4">
@@ -158,7 +158,7 @@
                 </video>
                 <a href="{{ MEDIA_URL }}{{ class_name }}.mp4" class="download-btn" download>Download</a>
 
-            {% elif "self.add" in previous_code %}
+            {% elif "self.add" in previous_code  %}
                 <img src="{{ MEDIA_URL }}{{ class_name }}.png" alt="Image">
                 <a href="{{ MEDIA_URL }}{{ class_name }}.png" class="download-btn" download>Download</a>
 
