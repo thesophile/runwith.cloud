@@ -158,7 +158,7 @@ def execute_code(request):
     
     
     #saving the entered code
-    previous_code = request.POST.get('code', '')  
+    previous_code = request.POST.get('code', '')
 
     if request.method == 'POST':
         processsed = False
