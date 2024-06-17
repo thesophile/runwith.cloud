@@ -36,19 +36,18 @@ def run_manim(class_name):
 
         base_dir = os.path.join(settings.BASE_DIR)  
 
-        activate_script = f'. {base_dir}/manimenv/bin/activate'
+        #activate_script = f'. {base_dir}/manimenv/bin/activate'
 
-        manim_command = f'manim -ql {base_dir}/manim/python_code_files/user_code.py -o {base_dir}/media/{class_name}'  
+        manim_command = f'{base_dir}/manimenv/bin/manim -ql {base_dir}/manim/python_code_files/user_code.py -o {base_dir}/media/{class_name}'  
 
-        full_command = f'{activate_script} && {manim_command}'
+        #full_command = f'{activate_script} && {manim_command}'
 
-        
+        manim_command_list = manim_command.split()
 
-        print(f"Running Manim command: {full_command}")
+        print(f"Running Manim command: {manim_command}")
 
         result = subprocess.run(
-            full_command,
-            shell=True, 
+            manim_command_list,
             capture_output=True, 
             text=True
             )
