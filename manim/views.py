@@ -31,8 +31,29 @@ from .utils import *
 #     except Exception as e:
 #         return JsonResponse({'status': 'error', 'error': str(e)})
 
-def run_manim(class_name):
+
+
+import ast
+
+def validate_user_input(user_input):
+    blacklist = [';', '&', 'rm ', '`', ' sys' , ' os']  
     try:
+        for item in blacklist:
+            if item in user_input:
+                print(f'Blacklisted item: {item}')
+                return False
+        return True    
+
+    except SyntaxError:
+        return False
+
+def run_manim(class_name,code):
+    try:
+
+        if not validate_user_input(code):
+            print("Invalid input")
+            result_message = 'Invalid input'
+            return result_message
 
         base_dir = os.path.join(settings.BASE_DIR)  
 
@@ -155,7 +176,7 @@ def execute_code(request):
 
         print(f'class name: {class_name}')
 
-        result_message = run_manim(class_name)        
+        result_message = run_manim(class_name,code)        
 
         #after HTTP request
         context = {'result_message':result_message,
