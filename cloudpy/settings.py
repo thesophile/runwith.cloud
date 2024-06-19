@@ -127,6 +127,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "manim" / "static" / "css",
+    BASE_DIR / "manim" / "static" / "img",
 ]
 
 STATIC_ROOT = '/var/www/static/'
