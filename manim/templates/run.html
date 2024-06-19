@@ -6,7 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudPy Manim</title>
-    <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.jpg">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <script>
         function ShowSpinner() {
             var spinner = document.getElementById('spinner');
@@ -19,114 +20,7 @@
         
     </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            color: #333; /* Dark gray text color */
-        }
-        h1 {
-            background-color: #5183a0; /* Custom blue color */
-            color: #fff; /* White text color */
-            padding: 20px;
-            text-align: center;
-            margin-top: 0;
-        }
-        .container {
-            display: flex;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff; /* White background color */
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
         
-        .item {
-            margin: 5px;
-            /* margin-bottom: 20px; */
-        }
-
-        .output-item{
-            display: flex;
-            flex-direction: column;  
-            align-items: center;
-            justify-content: center;
-            width:100%;
-        }
-
-        @media screen and (max-width: 768px) {
-            .container {
-            flex-direction: column;
-            }
-        }
-
-
-        label {
-            font-weight: bold;
-        }
-        textarea {
-            max-width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: vertical;
-        }
-        input[type="submit"] {
-            background-color: #5183a0; /* Custom blue color */
-            color: #fff; /* White text color */
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        input[type="submit"]:hover {
-            background-color: #3a6380; /* Darker shade of blue */
-        }
-        video, img {
-            /* width: 100%; */
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-        }
-        p {
-            text-align: center;
-        }
-
-        .download-btn {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 5px;
-        margin-top: 10px;
-        transition: background-color 0.3s;
-        }
-
-        .download-btn:hover {
-            background-color: #45a049;
-        }
-        
-        /*Spinner*/
-        .spinner {
-        border: 8px solid #f3f3f3; /* Light grey */
-        border-top: 8px solid #3498db; /* Blue */
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        animation: spin 2s linear infinite;
-        margin-bottom:30px;
-        display: none; /* Initially hidden */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
