@@ -53,7 +53,9 @@ textarea {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    resize: vertical;
+    resize: horizontal;
+    overflow-x: auto;
+    white-space: pre; 
 }
 input[type="submit"] {
     background-color: #5183a0; /* Custom blue color */
