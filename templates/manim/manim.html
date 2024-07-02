@@ -35,7 +35,26 @@
     </style>
 </head>
 <body>
-    <h1>CloudPy Manim <i>Beta</i></h1>
+    <!-- <h1>CloudPy Manim <i>Beta</i></h1> -->
+
+    <nav>
+        <div class="nav-left">
+            <a href="/">Home</a>
+        </div>
+        <div class="nav-center">
+            Cloudpy Manim beta
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <p>Welcome, {{ user.username }}!</p>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a> |
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+    </nav>
+
     <div class="container">
         <form method="post" class="item" >
             {% csrf_token %}

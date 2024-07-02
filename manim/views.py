@@ -185,7 +185,7 @@ def execute_code(request):
                    'class_name':class_name,
                    'placeholder': False,
                 }
-        return render(request, 'run.html',context)  
+        return render(request, 'manim/manim.html',context)  
          
     #before HTTP request
     placeholder = True
@@ -194,6 +194,6 @@ def execute_code(request):
                'placeholder':placeholder,
                'processed' : False
             }
-    return render(request, 'run.html',context )
+    return render(request, 'manim/manim.html',context )
 
 

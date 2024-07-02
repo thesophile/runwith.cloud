@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from home import views
+from home import views as home_view
+from accounts import views as accounts_view
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -24,6 +25,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
-    path('manim/',include('manim.urls'))
+    path('', home_view.index, name='home'),
+    path('signup/', accounts_view.signup_view, name='signup'),
+    path('login/', accounts_view.login_view, name='login'),
+    path('logout/', accounts_view.logout_view, name='logout'),
+    path('manim/',include('manim.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
