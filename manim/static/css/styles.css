@@ -66,6 +66,10 @@ nav {
     /* margin-bottom: 20px; */
 }
 
+.modal{
+    display: none;
+}
+
 .output-item{
     display: flex;
     flex-direction: column;  

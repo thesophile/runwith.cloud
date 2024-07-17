@@ -30,6 +30,8 @@
         }
         
     </script>
+
+
     <style>
         
     </style>
@@ -56,12 +58,44 @@
     </nav>
 
     <div class="container">
-        <form method="post" class="item" >
+        <form method="post" id="code-form" class="item" >
             {% csrf_token %}
+            <input type="hidden" name="form_type" value="execute"> <!--To distinguish between forms -->>
+
             <label for="code">Enter Manim code:</label><br>
             <textarea name="code" id="code" rows="20" cols="50">{{ previous_code }}</textarea><br>
             <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
+            <button type="button" id="save-btn">Save</button>
+
+            {% if request.user.is_authenticated %}
+            <!-- Dropdown to open saved codes -->
+            <select id="saved-codes">
+                <option value="">Open</option>
+                {% for code in saved_codes %}
+                <option value="{{ code.id }}">{{ code.name }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            {% endif %}
         </form>
+
+        <!-- Modal for saving code-->
+        <div id="save-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form action="{% url 'save_code' %}" method="post" id="save-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="save"> <!--To distinguish between forms -->>
+
+                    <label for="name">Enter name for the code:</label><br>
+                    <input type="text" id="name" name="name"><br>
+                    <input type="hidden" name="hidden_code" id="hidden_code">
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+
+
 
         <div class="item output-item">
             {{ result_message }}
@@ -93,5 +127,108 @@
             {% endif %}
         </div>
     </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!--For saving the code to database-->   
+    <script>
+        // Get the modal
+        var modal = document.getElementById("save-modal");
+    
+        // Get the button that opens the modal
+        var saveBtn = document.getElementById("save-btn");
+    
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+    
+        // When the user clicks the Save button, open the modal
+        saveBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+    
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    
+        // Optional: Validate form submission before allowing the modal to close
+        document.getElementById("save-form").onsubmit = function() {
+            var name = document.getElementById("name").value.trim();
+            if (name === "") {
+                alert("Please enter a name for the code.");
+                return false; // Prevent form submission
+            }
+        }
+
+        //append code text to hidden_code field
+        document.getElementById('save-form').addEventListener('submit', function(event) {
+            
+            console.log('clicked')
+            var visible_code = document.getElementById('code').value;
+            var hidden_code= document.getElementById('hidden_code');
+
+            hidden_code.value = visible_code;
+            console.log(hidden_code.value);
+
+             
+        });
+
+
+        // Fetch and display the code text when a saved code is selected
+    // document.getElementById("saved-codes").onchange = function() {
+    //     var codeId = this.value;
+    //     if (codeId) {
+    //         fetch(`/get-code/${codeId}/`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             document.getElementById("code_text").value = data.code_text;
+    //         });
+    //     } else {
+    //         document.getElementById("code_text").value = '';
+    //     }
+    // }
+
+    //save the code to database
+    // $(document).ready(function() {
+    //     $('#save-form').on('submit', function(event) {
+    //         event.preventDefault(); // Prevent the default form submission
+    //         console.log('Form submitted');
+
+    //         var formData = {
+    //             'name': $('#name').val(),
+    //             'code': $('#code').val(),
+    //         };    
+
+    //         console.log(formData);
+            
+    //         $.ajax({
+    //             type: 'POST',
+    //             url: '{% url "save_code" %}',
+    //             data: formData,
+    //             headers: {
+    //                 'X-CSRFToken': '{{ csrf_token }}'
+    //             },
+    //             success: function(response) {
+    //                 if (response.status === 'success') {
+    //                     alert('Form submitted successfully!');
+    //                 } else {
+    //                     alert('Form submission failed!');
+    //                     console.log(response.errors);
+    //                 }
+    //             },
+    //             error: function(response) {
+    //                 alert('An error occurred.');
+    //                 console.log(response);
+    //             }
+    //         });
+    //     });
+    // });
+    </script>
 </body>
 </html>

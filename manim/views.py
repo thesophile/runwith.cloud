@@ -1,6 +1,6 @@
  
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from io import StringIO
 import sys
@@ -12,7 +12,9 @@ from datetime import datetime, timedelta
 import time
 from django.http import JsonResponse
 from .utils import *
+from django.views.decorators.csrf import csrf_exempt
 
+from .models import Code 
 
 
 
@@ -155,12 +157,12 @@ def run_manim(class_name,code):
 
 def execute_code(request):
 
-    
+    saved_codes = Code.objects.filter(user=request.user) if request.user.is_authenticated else None
     
     #saving the entered code
     previous_code = request.POST.get('code', '')
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('form_type') == 'execute':
         processsed = False
         #delete old files
         media_dir = os.path.join(settings.BASE_DIR, 'media')
@@ -184,6 +186,8 @@ def execute_code(request):
                    'MEDIA_URL': settings.MEDIA_URL,
                    'class_name':class_name,
                    'placeholder': False,
+                   'saved_codes':saved_codes,
+                   'request': request,
                 }
         return render(request, 'manim/manim.html',context)  
          
@@ -192,8 +196,27 @@ def execute_code(request):
     context = {'previous_code': previous_code,
                'MEDIA_URL': settings.MEDIA_URL,
                'placeholder':placeholder,
-               'processed' : False
+               'processed' : False,
+               'saved_codes':saved_codes,
+               'request': request, 
             }
     return render(request, 'manim/manim.html',context )
 
+@csrf_exempt
+def save_code(request):
+    if request.method == 'POST' and request.POST.get('form_type') == 'save':
+        print('save button clicked')
+        code_text = request.POST.get('hidden_code')
+        name = request.POST.get('name')
+        if name:
+            # Save the code with the entered name
+            Code.objects.create(user=request.user, code_text=code_text, name=name)
+            print('code saved')
+            # return redirect('home')  # Redirect to home page or wherever you want
+        # Handle case where name is not provided (optional)
+    return redirect('manim_home')  # Redirect back to execute page after saving
 
+
+def get_code(request, code_id):
+    code = Code.objects.get(id=code_id, user=request.user)
+    return JsonResponse({'code_text': code.code_text})
