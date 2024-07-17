@@ -217,6 +217,10 @@ def save_code(request):
     return redirect('manim_home')  # Redirect back to execute page after saving
 
 
-def get_code(request, code_id):
-    code = Code.objects.get(id=code_id, user=request.user)
+# def get_code(request, code_id):
+#     code = Code.objects.get(id=code_id, user=request.user)
+#     return JsonResponse({'code_text': code.code_text})
+
+def get_code_text(request, code_id):
+    code = Code.objects.get(id=code_id)
     return JsonResponse({'code_text': code.code_text})

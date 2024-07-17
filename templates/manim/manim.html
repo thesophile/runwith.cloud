@@ -181,18 +181,18 @@
 
 
         // Fetch and display the code text when a saved code is selected
-    // document.getElementById("saved-codes").onchange = function() {
-    //     var codeId = this.value;
-    //     if (codeId) {
-    //         fetch(`/get-code/${codeId}/`)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             document.getElementById("code_text").value = data.code_text;
-    //         });
-    //     } else {
-    //         document.getElementById("code_text").value = '';
-    //     }
-    // }
+    document.getElementById("saved-codes").onchange = function() {
+        var codeId = this.value;
+        if (codeId) {
+            fetch(`get-code/${codeId}/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("code").value = data.code_text;
+            });
+        } else {
+            document.getElementById("code").value = '';
+        }
+    }
 
     //save the code to database
     // $(document).ready(function() {
