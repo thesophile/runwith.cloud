@@ -58,39 +58,41 @@
     </nav>
 
     <div class="container">
-
-        <div class="top-row-buttons">
-            <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
+        <div class="left-input">
+            <div class="top-row-buttons">
+                <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="save_current"> <!--To distinguish between forms -->
+                    <input type="hidden" name="hidden_code_current" id="hidden_code_current">
+                    <button type="submit" id="save-btn">Save</button>
+                </form>
+        
+                <button type="button" id="save-new-btn">Save New</button>
+        
+                {% if request.user.is_authenticated %}
+                <!-- Dropdown to open saved codes -->
+                <select id="saved-codes">
+                    <option value="">Open</option>
+                    {% for code in saved_codes %}
+                    <option value="{{ code.id }}">{{ code.name }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                {% endif %}
+            </div>
+            
+    
+            <form method="post" id="code-form" class="item" >
                 {% csrf_token %}
-                <input type="hidden" name="form_type" value="save_current"> <!--To distinguish between forms -->>
-                <input type="hidden" name="hidden_code_current" id="hidden_code_current">
-                <button type="submit" id="save-btn">Save</button>
+                <input type="hidden" name="form_type" value="execute"> <!--To distinguish between forms -->
+    
+                <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here">{{ previous_code }}</textarea><br>
+                <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
+                
             </form>
     
-            <button type="button" id="save-new-btn">Save New</button>
-    
-            {% if request.user.is_authenticated %}
-            <!-- Dropdown to open saved codes -->
-            <select id="saved-codes">
-                <option value="">Open</option>
-                {% for code in saved_codes %}
-                <option value="{{ code.id }}">{{ code.name }}</option>
-                {% endfor %}
-            </select>
-            <br><br>
-            {% endif %}
         </div>
         
-
-        <form method="post" id="code-form" class="item" >
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="execute"> <!--To distinguish between forms -->>
-
-            <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here">{{ previous_code }}</textarea><br>
-            <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
-            
-        </form>
-
         <!-- Modal for saving code-->
         <div id="save-modal" class="modal">
             <div class="modal-content">
