@@ -1,4 +1,4 @@
-*.cpython-311.pyc
+*.pyc
 
 media/
 manim/python_code_files/

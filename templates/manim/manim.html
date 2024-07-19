@@ -58,15 +58,17 @@
     </nav>
 
     <div class="container">
-        <form method="post" id="code-form" class="item" >
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="execute"> <!--To distinguish between forms -->>
 
-            <label for="code">Enter Manim code:</label><br>
-            <textarea name="code" id="code" rows="20" cols="50">{{ previous_code }}</textarea><br>
-            <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
-            <button type="button" id="save-btn">Save</button>
-
+        <div class="top-row-buttons">
+            <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="save_current"> <!--To distinguish between forms -->>
+                <input type="hidden" name="hidden_code_current" id="hidden_code_current">
+                <button type="submit" id="save-btn">Save</button>
+            </form>
+    
+            <button type="button" id="save-new-btn">Save New</button>
+    
             {% if request.user.is_authenticated %}
             <!-- Dropdown to open saved codes -->
             <select id="saved-codes">
@@ -77,19 +79,29 @@
             </select>
             <br><br>
             {% endif %}
+        </div>
+        
+
+        <form method="post" id="code-form" class="item" >
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="execute"> <!--To distinguish between forms -->>
+
+            <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here">{{ previous_code }}</textarea><br>
+            <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
+            
         </form>
 
         <!-- Modal for saving code-->
         <div id="save-modal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <form action="{% url 'save_code' %}" method="post" id="save-form">
+                <form action="{% url 'save_new_code' %}" method="post" id="save-new-form">
                     {% csrf_token %}
                     <input type="hidden" name="form_type" value="save"> <!--To distinguish between forms -->>
 
                     <label for="name">Enter name for the code:</label><br>
                     <input type="text" id="name" name="name"><br>
-                    <input type="hidden" name="hidden_code" id="hidden_code">
+                    <input type="hidden" name="hidden_code_new" id="hidden_code_new">
                     <button type="submit">Save</button>
                 </form>
             </div>
@@ -135,13 +147,13 @@
         var modal = document.getElementById("save-modal");
     
         // Get the button that opens the modal
-        var saveBtn = document.getElementById("save-btn");
+        var savenewBtn = document.getElementById("save-new-btn");
     
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
     
         // When the user clicks the Save button, open the modal
-        saveBtn.onclick = function() {
+        savenewBtn.onclick = function() {
             modal.style.display = "block";
         }
     
@@ -158,7 +170,7 @@
         }
     
         // Optional: Validate form submission before allowing the modal to close
-        document.getElementById("save-form").onsubmit = function() {
+        document.getElementById("save-new-form").onsubmit = function() {
             var name = document.getElementById("name").value.trim();
             if (name === "") {
                 alert("Please enter a name for the code.");
@@ -167,17 +179,28 @@
         }
 
         //append code text to hidden_code field
-        document.getElementById('save-form').addEventListener('submit', function(event) {
+        document.getElementById('save-new-form').addEventListener('submit', function(event) {
             
             console.log('clicked')
             var visible_code = document.getElementById('code').value;
-            var hidden_code= document.getElementById('hidden_code');
+            var hidden_code= document.getElementById('hidden_code_new');
 
             hidden_code.value = visible_code;
             console.log(hidden_code.value);
 
-             
         });
+
+        document.getElementById('save-current-form').addEventListener('submit', function(event) {
+            
+            console.log('clicked')
+            var visible_code = document.getElementById('code').value;
+            var hidden_code= document.getElementById('hidden_code_current');
+
+            hidden_code.value = visible_code;
+            console.log(hidden_code.value);
+
+        });
+
 
 
         // Fetch and display the code text when a saved code is selected
@@ -194,41 +217,7 @@
         }
     }
 
-    //save the code to database
-    // $(document).ready(function() {
-    //     $('#save-form').on('submit', function(event) {
-    //         event.preventDefault(); // Prevent the default form submission
-    //         console.log('Form submitted');
-
-    //         var formData = {
-    //             'name': $('#name').val(),
-    //             'code': $('#code').val(),
-    //         };    
-
-    //         console.log(formData);
-            
-    //         $.ajax({
-    //             type: 'POST',
-    //             url: '{% url "save_code" %}',
-    //             data: formData,
-    //             headers: {
-    //                 'X-CSRFToken': '{{ csrf_token }}'
-    //             },
-    //             success: function(response) {
-    //                 if (response.status === 'success') {
-    //                     alert('Form submitted successfully!');
-    //                 } else {
-    //                     alert('Form submission failed!');
-    //                     console.log(response.errors);
-    //                 }
-    //             },
-    //             error: function(response) {
-    //                 alert('An error occurred.');
-    //                 console.log(response);
-    //             }
-    //         });
-    //     });
-    // });
+    
     </script>
 </body>
 </html>

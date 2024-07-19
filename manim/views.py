@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import time
 from django.http import JsonResponse
 from .utils import *
+from .cache_utils import *
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Code 
@@ -36,6 +37,8 @@ from .models import Code
 
 
 import ast
+
+current_code_name = None
 
 def validate_user_input(user_input):
     blacklist = [';', '&', 'rm ', '`', ' sys' , ' os']  
@@ -160,7 +163,8 @@ def execute_code(request):
     saved_codes = Code.objects.filter(user=request.user) if request.user.is_authenticated else None
     
     #saving the entered code
-    previous_code = request.POST.get('code', '')
+    previous_code = get_previous_code()
+    # previous_code = request.POST.get('code', '')
 
     if request.method == 'POST' and request.POST.get('form_type') == 'execute':
         processsed = False
@@ -172,6 +176,9 @@ def execute_code(request):
         #save the code as a python file 
         code = request.POST.get('code', '')
         python_file = save_python_code_to_file(code)
+
+        #save code to cache
+        save_to_cache(code)
 
         # find class name
         class_name = find_class_name(code) # we need this because the resultant video is saved in a folder named after class name. 
@@ -203,19 +210,45 @@ def execute_code(request):
     return render(request, 'manim/manim.html',context )
 
 @csrf_exempt
-def save_code(request):
+def save_new_code(request):
     if request.method == 'POST' and request.POST.get('form_type') == 'save':
         print('save button clicked')
-        code_text = request.POST.get('hidden_code')
+        code_text = request.POST.get('hidden_code_new')
+        save_to_cache(code_text)
         name = request.POST.get('name')
         if name:
             # Save the code with the entered name
             Code.objects.create(user=request.user, code_text=code_text, name=name)
+            set_current_code_name(name)
             print('code saved')
             # return redirect('home')  # Redirect to home page or wherever you want
         # Handle case where name is not provided (optional)
     return redirect('manim_home')  # Redirect back to execute page after saving
 
+def save_current_code(request):
+    if request.method == 'POST' and request.POST.get('form_type') == 'save_current':
+        print('save button clicked')
+        new_code_text = request.POST.get('hidden_code_current')
+        save_to_cache(new_code_text)
+        # name = request.POST.get('name')
+        current_code_name = get_current_code_name()
+        if current_code_name:
+            # Save the code with the entered name
+            Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
+            print('code saved')
+            #save code to display locally
+             
+            # return redirect('home')  # Redirect to home page or wherever you want
+        else:
+             
+            print('current_code_name not defined')
+    
+    return redirect('manim_home')  # Redirect back to execute page after saving
+
+   
+         
+
+    
 
 # def get_code(request, code_id):
 #     code = Code.objects.get(id=code_id, user=request.user)
@@ -223,4 +256,5 @@ def save_code(request):
 
 def get_code_text(request, code_id):
     code = Code.objects.get(id=code_id)
+    set_current_code_name(code.name) 
     return JsonResponse({'code_text': code.code_text})
