@@ -1,23 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% block title %}CloudPy Manim{% endblock %}
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-G43JV3W9MS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-G43JV3W9MS');
-</script>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudPy Manim</title>
-    <link rel="icon" type="image/x-icon" href="/static/img/favicon.jpg">
+{% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <script>
         function ShowSpinner() {
@@ -28,42 +14,39 @@
             var placeholder = document.getElementById('placeholder');
             placeholder.style.display = 'none';
         }
-        
     </script>
-
-
     <style>
+        body {
         
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     </style>
-</head>
-<body>
-    <!-- <h1>CloudPy Manim <i>Beta</i></h1> -->
 
-    <nav>
-        <div class="nav-left">
-            <a href="/">Home</a>
-        </div>
-        <div class="nav-center">
-            Cloudpy Manim beta
-        </div>
-        <div class="nav-right">
-            {% if user.is_authenticated %}
-                <p>Welcome, {{ user.username }}!</p>
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a> |
-                <a href="{% url 'signup' %}">Signup</a>
-            {% endif %}
-        </div>
-    </nav>
+<style>
+    /* Adjustments specific to manim.html */
+    nav {
+        height: fit-content; /* Ensure the height is not fixed */
+    }
+    .container {
+        margin-top: 80px; /* Ensure the container is properly spaced below the navbar */
+    }
 
+    .nav-right {
+        padding:2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <div class="left-input">
             <div class="top-row-buttons">
-                
                 <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
                     {% csrf_token %}
-                    <input type="hidden" name="form_type" value="save_current"> <!--To distinguish between forms -->
+                    <input type="hidden" name="form_type" value="save_current">
                     <input type="hidden" name="hidden_code_current" id="hidden_code_current">
                     <button type="submit" id="save-btn">Save</button>
                 </form>
@@ -81,17 +64,13 @@
                 <br><br>
                 
             </div>
-            
     
-            <form method="post" id="code-form" class="item" >
+            <form method="post" id="code-form" class="item">
                 {% csrf_token %}
-                <input type="hidden" name="form_type" value="execute"> <!--To distinguish between forms -->
-    
+                <input type="hidden" name="form_type" value="execute">
                 <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here">{{ previous_code }}</textarea><br>
                 <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
-                
             </form>
-    
         </div>
         
         <!-- Modal for saving code-->
@@ -100,8 +79,7 @@
                 <span class="close">&times;</span>
                 <form action="{% url 'save_new_code' %}" method="post" id="save-new-form">
                     {% csrf_token %}
-                    <input type="hidden" name="form_type" value="save"> <!--To distinguish between forms -->
-
+                    <input type="hidden" name="form_type" value="save">
                     <label for="name">Enter a name for the project:</label><br>
                     <input type="text" id="name" name="name"><br>
                     <input type="hidden" name="hidden_code_new" id="hidden_code_new">
@@ -110,62 +88,32 @@
             </div>
         </div>
 
-
-
         <div class="item output-item">
             {{ result_message }}
 
-            <!-- if not processed -->
-            {% if not result_message %} 
+            {% if not result_message %}
                 <div id="spinner" class="spinner"></div>
             {% endif %}
 
             {% if placeholder %}
                 <img src="{% static 'img/placeholder.png' %}" alt="Image" id="placeholder">
-                
-            {% elif "self.play" in previous_code or "self.wait" in previous_code%}
-                
+            {% elif "self.play" in previous_code or "self.wait" in previous_code %}
                 <video controls>
                     <source src="{{ MEDIA_URL }}{{ class_name }}.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <a href="{{ MEDIA_URL }}{{ class_name }}.mp4" class="download-btn" download>Download</a>
-
-            {% elif "self.add" in previous_code  %}
+            {% elif "self.add" in previous_code %}
                 <img src="{{ MEDIA_URL }}{{ class_name }}.png" alt="Image">
                 <a href="{{ MEDIA_URL }}{{ class_name }}.png" class="download-btn" download>Download</a>
-
-
-               
             {% else %}
                 <p>No output available</p>
             {% endif %}
         </div>
     </div>
+{% endblock %}
 
-    {% if user.is_authenticated %}
-        <script>
-            var isAuthenticated = true;
-        </script>
-    {% else %}
-        <script>
-            var isAuthenticated = false;
-        </script>
-    {% endif %}
-
-    {% if current_code_name %}
-        <script>
-            var current_code_present = true;
-        </script>
-    {% else %}
-        <script>
-            var current_code_present = false;
-        </script>
-    {% endif %}
-
-
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!--For saving the code to database-->   
+{% block extra_scripts %}
     <script>
         // Get the modal
         var modal = document.getElementById("save-modal");
@@ -175,17 +123,10 @@
     
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
-
         var openDropdown = document.getElementById("saved-codes");   
-
-
         var saveBtn = document.getElementById("save-btn");
         var SaveCurrentForm = document.getElementById("save-current-form");
 
-        
-        
-    
-        // When the user clicks the Save button, open the modal
         savenewBtn.onclick = function() {
             if (isAuthenticated){
                 modal.style.display = "block";                         
@@ -195,19 +136,16 @@
             }
         }
     
-        // When the user clicks on <span> (x), close the modal
         span.onclick = function() {
             modal.style.display = "none";
         }
     
-        // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         }
     
-        // Optional: Validate form submission before allowing the modal to close
         document.getElementById("save-new-form").onsubmit = function() {
             var name = document.getElementById("name").value.trim();
             if (name === "") {
@@ -216,69 +154,52 @@
             }
         }
 
-        //append code text to hidden_code field
         document.getElementById('save-new-form').addEventListener('submit', function(event) {
-            
-            console.log('clicked')
             var visible_code = document.getElementById('code').value;
             var hidden_code= document.getElementById('hidden_code_new');
-
             hidden_code.value = visible_code;
-            console.log(hidden_code.value);
-
         });
 
-        
-
-        
-
-
-
-
-    openDropdown.onclick = function() {
-        if(!isAuthenticated){
-            event.preventDefault();
-            alert('You will have to Log in to do that');
-        }else {
-            var options = openDropdown.getElementsByTagName("option");
-            if (options.length <= 1) { // Check if only the default option is present
-                noOptionsMessage.style.display = "block";
-            } else {
-                noOptionsMessage.style.display = "none";
+        openDropdown.onclick = function() {
+            if(!isAuthenticated){
+                event.preventDefault();
+                alert('You will have to Log in to do that');
+            }else {
+                var options = openDropdown.getElementsByTagName("option");
+                if (options.length <= 1) { // Check if only the default option is present
+                    noOptionsMessage.style.display = "block";
+                } else {
+                    noOptionsMessage.style.display = "none";
+                }
             }
         }
-    }
 
-        // Fetch and display the code text when a saved code is selected
-    openDropdown.onchange = function() {
-        var codeId = this.value;
-        if (codeId) {
-            fetch(`get-code/${codeId}/`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("code").value = data.code_text;
-            });
-        } else {
-            document.getElementById("code").value = '';
+        openDropdown.onchange = function() {
+            var codeId = this.value;
+            if (codeId) {
+                fetch(`get-code/${codeId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("code").value = data.code_text;
+                });
+            } else {
+                document.getElementById("code").value = '';
+            }
         }
-    }
 
-    saveBtn.onclick = function(event) {
-        if (!isAuthenticated) {
-            event.preventDefault();
-            alert("You have to log in to do that");
-        } else if(!current_code_present){
-            alert('Create new project first');
-        } else {
-            console.log('Authenticated');
-            var visible_code = document.getElementById('code').value;
-            var hidden_code= document.getElementById('hidden_code_current');
-
-            hidden_code.value = visible_code;
-            SaveCurrentForm.submit();
+        saveBtn.onclick = function(event) {
+            if (!isAuthenticated) {
+                event.preventDefault();
+                alert("You have to log in to do that");
+            } else if(!current_code_present){
+                alert('Create new project first');
+            } else {
+                var visible_code = document.getElementById('code').value;
+                var hidden_code= document.getElementById('hidden_code_current');
+                hidden_code.value = visible_code;
+                SaveCurrentForm.submit();
+            }
         }
-    }
-    
     </script>
-</body>
-</html>
+{% endblock %}
+ 

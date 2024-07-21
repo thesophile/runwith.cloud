@@ -19,52 +19,53 @@
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.jpg' %}">
     
     <style>
-         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            color: #333; /* Dark gray text color */
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+        color: #333; /* Dark gray text color */
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
 
-        /* Nav bar */
-        nav {
-            background-color: #5183a0; /* Custom blue color */
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            box-sizing: border-box;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000; /* Ensure the navbar is above other content */
-        }
+    nav {
+        background-color: #5183a0; /* Custom blue color */
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000; /* Ensure the navbar is above other content */
+    }
 
-        .nav-left, .nav-center, .nav-right {
-            display: flex;
-            align-items: center;
-        }
+    .nav-left, .nav-center, .nav-right {
+        display: flex;
+        align-items: center;
+    }
 
-        .nav-left a, .nav-right a {
-            color: white;
-            text-decoration: none;
-            padding: 14px 16px;
-        }
+    .nav-left a, .nav-right a {
+        color: white;
+        text-decoration: none;
+        padding: 14px 16px;
+    }
 
-        .nav-center {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
+    .nav-center {
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+    }
 
-        .nav-left a:hover, .nav-right a:hover {
-            background-color: #3a6a85; /* Darker blue for hover effect */
-        }
+    .nav-left a:hover, .nav-right a:hover {
+        background-color: #3a6a85; /* Darker blue for hover effect */
+    }
+          
     </style>
 
     
