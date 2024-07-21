@@ -166,12 +166,16 @@ def execute_code(request):
     previous_code = get_previous_code()
     # previous_code = request.POST.get('code', '')
 
+    current_code_name = get_current_code_name()
+
     if request.method == 'POST' and request.POST.get('form_type') == 'execute':
         processsed = False
         #delete old files
         media_dir = os.path.join(settings.BASE_DIR, 'media')
 
         delete_old_files(media_dir)
+
+        current_code_name = get_current_code_name()
 
         #save the code as a python file 
         code = request.POST.get('code', '')
@@ -195,6 +199,7 @@ def execute_code(request):
                    'placeholder': False,
                    'saved_codes':saved_codes,
                    'request': request,
+                   'current_code_name':current_code_name,
                 }
         return render(request, 'manim/manim.html',context)  
          
@@ -206,6 +211,7 @@ def execute_code(request):
                'processed' : False,
                'saved_codes':saved_codes,
                'request': request, 
+               'current_code_name':current_code_name,
             }
     return render(request, 'manim/manim.html',context )
 

@@ -60,6 +60,7 @@
     <div class="container">
         <div class="left-input">
             <div class="top-row-buttons">
+                
                 <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
                     {% csrf_token %}
                     <input type="hidden" name="form_type" value="save_current"> <!--To distinguish between forms -->
@@ -67,18 +68,18 @@
                     <button type="submit" id="save-btn">Save</button>
                 </form>
         
-                <button type="button" id="save-new-btn">Save New</button>
+                <button type="button" id="save-new-btn">New Project</button>
         
-                {% if request.user.is_authenticated %}
                 <!-- Dropdown to open saved codes -->
                 <select id="saved-codes">
-                    <option value="">Open</option>
+                    <option value="" disabled selected>Open</option>
                     {% for code in saved_codes %}
                     <option value="{{ code.id }}">{{ code.name }}</option>
                     {% endfor %}
                 </select>
+                <p id="noOptionsMessage" style="display: none;">No Projects saved</p>
                 <br><br>
-                {% endif %}
+                
             </div>
             
     
@@ -99,9 +100,9 @@
                 <span class="close">&times;</span>
                 <form action="{% url 'save_new_code' %}" method="post" id="save-new-form">
                     {% csrf_token %}
-                    <input type="hidden" name="form_type" value="save"> <!--To distinguish between forms -->>
+                    <input type="hidden" name="form_type" value="save"> <!--To distinguish between forms -->
 
-                    <label for="name">Enter name for the code:</label><br>
+                    <label for="name">Enter a name for the project:</label><br>
                     <input type="text" id="name" name="name"><br>
                     <input type="hidden" name="hidden_code_new" id="hidden_code_new">
                     <button type="submit">Save</button>
@@ -142,6 +143,27 @@
         </div>
     </div>
 
+    {% if user.is_authenticated %}
+        <script>
+            var isAuthenticated = true;
+        </script>
+    {% else %}
+        <script>
+            var isAuthenticated = false;
+        </script>
+    {% endif %}
+
+    {% if current_code_name %}
+        <script>
+            var current_code_present = true;
+        </script>
+    {% else %}
+        <script>
+            var current_code_present = false;
+        </script>
+    {% endif %}
+
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!--For saving the code to database-->   
     <script>
@@ -153,10 +175,24 @@
     
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
+
+        var openDropdown = document.getElementById("saved-codes");   
+
+
+        var saveBtn = document.getElementById("save-btn");
+        var SaveCurrentForm = document.getElementById("save-current-form");
+
+        
+        
     
         // When the user clicks the Save button, open the modal
         savenewBtn.onclick = function() {
-            modal.style.display = "block";
+            if (isAuthenticated){
+                modal.style.display = "block";                         
+            }
+            else{
+                alert("You have to Log in to do that");
+            }
         }
     
         // When the user clicks on <span> (x), close the modal
@@ -192,21 +228,29 @@
 
         });
 
-        document.getElementById('save-current-form').addEventListener('submit', function(event) {
-            
-            console.log('clicked')
-            var visible_code = document.getElementById('code').value;
-            var hidden_code= document.getElementById('hidden_code_current');
+        
 
-            hidden_code.value = visible_code;
-            console.log(hidden_code.value);
-
-        });
+        
 
 
+
+
+    openDropdown.onclick = function() {
+        if(!isAuthenticated){
+            event.preventDefault();
+            alert('You will have to Log in to do that');
+        }else {
+            var options = openDropdown.getElementsByTagName("option");
+            if (options.length <= 1) { // Check if only the default option is present
+                noOptionsMessage.style.display = "block";
+            } else {
+                noOptionsMessage.style.display = "none";
+            }
+        }
+    }
 
         // Fetch and display the code text when a saved code is selected
-    document.getElementById("saved-codes").onchange = function() {
+    openDropdown.onchange = function() {
         var codeId = this.value;
         if (codeId) {
             fetch(`get-code/${codeId}/`)
@@ -219,6 +263,21 @@
         }
     }
 
+    saveBtn.onclick = function(event) {
+        if (!isAuthenticated) {
+            event.preventDefault();
+            alert("You have to log in to do that");
+        } else if(!current_code_present){
+            alert('Create new project first');
+        } else {
+            console.log('Authenticated');
+            var visible_code = document.getElementById('code').value;
+            var hidden_code= document.getElementById('hidden_code_current');
+
+            hidden_code.value = visible_code;
+            SaveCurrentForm.submit();
+        }
+    }
     
     </script>
 </body>
