@@ -1,0 +1,126 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-G43JV3W9MS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-G43JV3W9MS');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CloudPy Manim{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.jpg' %}">
+    
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333; /* Dark gray text color */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Nav bar */
+        nav {
+            background-color: #5183a0; /* Custom blue color */
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000; /* Ensure the navbar is above other content */
+        }
+
+        .nav-left, .nav-center, .nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-left a, .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+        }
+
+        .nav-center {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-left a:hover, .nav-right a:hover {
+            background-color: #3a6a85; /* Darker blue for hover effect */
+        }
+    </style>
+
+    
+    {% block extra_head %}
+    <!-- Additional scripts or styles specific to pages extending this base template -->
+    {% endblock %}
+    
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/">Home</a>
+        </div>
+        <div class="nav-center">
+            Cloudpy Manim beta
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <p>Welcome, {{ user.username }}!</p>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a> |
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    
+        {% block content %}
+        <!-- Page-specific content will be injected here -->
+        {% endblock %}
+    
+
+    {% if user.is_authenticated %}
+        <script>
+            var isAuthenticated = true;
+        </script>
+    {% else %}
+        <script>
+            var isAuthenticated = false;
+        </script>
+    {% endif %}
+
+    {% if current_code_name %}
+        <script>
+            var current_code_present = true;
+        </script>
+    {% else %}
+        <script>
+            var current_code_present = false;
+        </script>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_scripts %}
+    <!-- Additional scripts specific to pages extending this base template -->
+    {% endblock %}
+</body>
+</html>
