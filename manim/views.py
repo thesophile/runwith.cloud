@@ -236,8 +236,9 @@ def save_current_code(request):
         print('save button clicked')
         new_code_text = request.POST.get('hidden_code_current')
         save_to_cache(new_code_text)
-        # name = request.POST.get('name')
+        print(new_code_text)
         current_code_name = get_current_code_name()
+        print(f'current_code_name:{current_code_name}')
         if current_code_name:
             # Save the code with the entered name
             Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
@@ -262,5 +263,6 @@ def save_current_code(request):
 
 def get_code_text(request, code_id):
     code = Code.objects.get(id=code_id)
-    set_current_code_name(code.name) 
+    set_current_code_name(code.name)
+    print(f'Current code name set as {code.name}') 
     return JsonResponse({'code_text': code.code_text})
