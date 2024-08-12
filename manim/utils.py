@@ -80,9 +80,16 @@ def save_python_code_to_file(code):
     # Generate a unique filename for the Python file
     filename = os.path.join(save_dir, 'user_code.py')
 
-    # Write the user's Python code to the file
-    with open(filename, 'w') as file:
-        file.write(code)
+    try:
+        # Write the user's Python code to the file
+        with open(filename, 'w') as file:
+            file.write(code)
+        print('code saved as python file')
+    except Exception as e:
+        print(f'Failed to save file: {e}')
+    
+    print(f'code length:{len(code)}')
+    print(f'File exists: {os.path.isfile(filename)}')
 
     return filename
 

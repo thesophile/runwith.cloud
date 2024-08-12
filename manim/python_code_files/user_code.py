@@ -1,12 +1,17 @@
 from manim import *
 
-class BraceAnnotation(Scene):
+class PointMovingOnShapes(Scene):
     def construct(self):
-        dot = Dot([-2, -1, 0])
-        dot2 = Dot([2, 1, 0])
-        line = Line(dot.get_center(), dot2.get_center()).set_color(ORANGE)
-        b1 = Brace(line)
-        b1text = b1.get_text("Horizontal distance edited 2")
-        b2 = Brace(line, direction=line.copy().rotate(PI / 2).get_unit_vector())
-        b2text = b2.get_tex("x-x_1")
-        self.add(line, dot, dot2, b1, b2, b1text, b2text)
+        circle = Circle(radius=1, color=BLUE)
+        dot = Dot()
+        dot2 = dot.copy().shift(RIGHT)
+        self.add(dot)
+
+        line = Line([3, 0, 0], [5, 0, 0])
+        self.add(line)
+
+        self.play(GrowFromCenter(circle))
+        self.play(Transform(dot, dot2))
+        self.play(MoveAlongPath(dot, circle), run_time=2, rate_func=linear)
+        self.play(Rotating(dot, about_point=[2, 0, 0]), run_time=1.5)
+        self.wait()
