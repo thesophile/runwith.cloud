@@ -89,7 +89,6 @@ def save_python_code_to_file(code):
         print(f'Failed to save file: {e}')
     
     print(f'code length:{len(code)}')
-    print(f'File exists: {os.path.isfile(filename)}')
 
     return filename
 
