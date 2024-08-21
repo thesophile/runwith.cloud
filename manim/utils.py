@@ -11,35 +11,35 @@ from .utils import *
 
 
 
-def run_manim_command(image_name, base_dir, user_code, class_name):
-    client = docker.from_env()
+# def run_manim_command(image_name, base_dir, user_code, class_name):
+#     client = docker.from_env()
     
-    # Define the volumes
-    volumes = {
-        f"{base_dir}/manim/python_code_files": {'bind': '/mnt/code', 'mode': 'rw'},
-        f"{base_dir}/media": {'bind': '/mnt/output', 'mode': 'rw'}
-    }
+#     # Define the volumes
+#     volumes = {
+#         f"{base_dir}/manim/python_code_files": {'bind': '/mnt/code', 'mode': 'rw'},
+#         f"{base_dir}/media": {'bind': '/mnt/output', 'mode': 'rw'}
+#     }
     
-    # Define the command with the appropriate paths
-    docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{class_name}"
+#     # Define the command with the appropriate paths
+#     docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{class_name}"
     
-    try:
-        # Create and start the container
-        container = client.containers.run(
-            image_name,
-            docker_command,
-            volumes=volumes,
-            detach=True,
-            remove=True
-        )
+#     try:
+#         # Create and start the container
+#         container = client.containers.run(
+#             image_name,
+#             docker_command,
+#             volumes=volumes,
+#             detach=True,
+#             remove=True
+#         )
         
-        # Wait for the container to finish and get the logs
-        container.wait()
-        logs = container.logs().decode()
-    except Exception as e:
-        return str(e)
+#         # Wait for the container to finish and get the logs
+#         container.wait()
+#         logs = container.logs().decode()
+#     except Exception as e:
+#         return str(e)
     
-    return logs
+#     return logs
 
 
 

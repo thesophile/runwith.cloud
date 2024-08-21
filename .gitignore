@@ -1,6 +1,11 @@
 *.pyc
 
-media/
-manim/python_code_files/
+# Ignore all contents of the python_code_files folder except for the keep file
+manim/python_code_files/*
+!manim/python_code_files/keep
 
 manimenv/
+
+# Ignore all contents of the media folder except for the keep file
+media/*
+!media/keep

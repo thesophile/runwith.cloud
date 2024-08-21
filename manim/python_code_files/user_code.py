@@ -1,12 +1,11 @@
 from manim import *
 
-class BraceAnnotation(Scene):
+class FixedInFrameMObjectTest(ThreeDScene):
     def construct(self):
-        dot = Dot([-2, -1, 0])
-        dot2 = Dot([2, 1, 0])
-        line = Line(dot.get_center(), dot2.get_center()).set_color(ORANGE)
-        b1 = Brace(line)
-        b1text = b1.get_text("Horizontal distance")
-        b2 = Brace(line, direction=line.copy().rotate(PI / 2).get_unit_vector())
-        b2text = b2.get_tex("x-x_1")
-        self.add(line, dot, dot2, b1, b2, b1text, b2text)
+        axes = ThreeDAxes()
+        self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+        text3d = Text("This is a 3D text")
+        self.add_fixed_in_frame_mobjects(text3d)
+        text3d.to_corner(UL)
+        self.add(axes)
+        self.wait()
