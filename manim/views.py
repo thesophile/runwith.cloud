@@ -25,6 +25,17 @@ import os
 import docker
 
 
+def test_docker(request):
+    try:
+        client = docker.from_env()
+        # Check Docker version or any other command
+        version = client.version()
+        return JsonResponse({'status': 'success', 'docker_version': version})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
 def run_manim_command(image_name, base_dir, class_name):
     client = docker.from_env()
 
