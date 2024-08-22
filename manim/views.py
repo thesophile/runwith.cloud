@@ -65,11 +65,13 @@ def run_manim_command(image_name, base_dir, class_name):
     except Exception as e:
         return f"Error: {str(e)}"
     finally:
-        # Remove the container
-        try:
-            container.remove(force=True)
-        except Exception as e:
-            return f"Error removing container: {str(e)}"
+        if container:
+
+            # Remove the container
+            try:
+                container.remove(force=True)
+            except Exception as e:
+                return f"Error removing container: {str(e)}"
     
     return logs
 
