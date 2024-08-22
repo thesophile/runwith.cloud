@@ -50,8 +50,6 @@ def run_manim_command(image_name, base_dir, class_name):
     # Define the command with the appropriate paths
     docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{class_name}"
     
-    container = None  # Initialize container variable
-
     try:
         # Create and start the container
         container = client.containers.run(
@@ -64,24 +62,16 @@ def run_manim_command(image_name, base_dir, class_name):
         # Wait for the container to finish and get the logs
         result = container.wait()
         logs = container.logs().decode()
-    except docker.errors.APIError as e:
-        logs = f"APIError: {str(e)}"
-    except docker.errors.DockerException as e:
-        logs = f"DockerException: {str(e)}"
     except Exception as e:
-        logs = f"Error: {str(e)}"
+        return f"Error: {str(e)}"
     finally:
         if container:
 
             # Remove the container
             try:
                 container.remove(force=True)
-            except docker.errors.APIError as e:
-                logs += f"\nError removing container: APIError - {str(e)}"
-            except docker.errors.DockerException as e:
-                logs += f"\nError removing container: DockerException - {str(e)}"
             except Exception as e:
-                logs += f"\nError removing container: {str(e)}"
+                return f"Error removing container: {str(e)}"
     
     return logs
 
