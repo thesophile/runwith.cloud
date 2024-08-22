@@ -24,6 +24,7 @@ import subprocess
 import os
 import docker
 
+import traceback
 
 def test_docker(request):
     try:
@@ -85,7 +86,8 @@ def run_docker_command(class_name):
          
 
     except Exception as e:
-        result_message = f"Error executing shell command: {e}"
+        result_message = f"Error executing shell command: {e}\nTraceback: {traceback.format_exc()}"
+
 
     return result_message    
 
