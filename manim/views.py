@@ -79,8 +79,8 @@ def run_docker_command(class_name):
     image_name = 'manimcommunity/manim'
     base_dir = os.path.join(settings.BASE_DIR)  
     try:
-        run_manim_command(image_name, base_dir, class_name)
-        result_message = ''
+        result_message = run_manim_command(image_name, base_dir, class_name)
+         
 
     except Exception as e:
         result_message = f"Error executing shell command: {e}"
