@@ -28,7 +28,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SECRET_KEY = 'django-insecure-bm5v%1eo(9ctdvd5!=anucw^8dn!^jd%zye%y_j%f@lz$b^_*j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['cloudpy.online','www.cloudpy.online','127.0.0.1','13.61.19.243']
 
@@ -124,11 +124,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "manim" / "static" / "css",
-    BASE_DIR / "manim" / "static" / "img",
+    BASE_DIR / "manim" / "static",
 ]
 
 STATIC_ROOT = '/var/www/static/'
