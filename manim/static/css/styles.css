@@ -5,7 +5,8 @@
 
 .container {
     display: flex;
-    max-width: 800px;
+    width: fit-content;
+    max-width: 1200px;
     margin: 80px auto 20px; /* Adjust based on navbar height */
     padding: 20px;
     background-color: #fff;
@@ -15,6 +16,7 @@
 }
 
 .item {
+    width:100%;
     margin: 5px;
     /* margin-bottom: 20px; */
 }
@@ -23,13 +25,14 @@
     display: none;
 }
 
+/* The output img/video */
 .output-item{
     display: flex;
     flex-direction: column;  
     align-items: center;
     justify-content: center;
-    width:100%;
-    min-width:300px;
+    /* width:100%; */
+    /* min-width:300px; */
 }
 
 @media screen and (max-width: 768px) {
@@ -43,7 +46,8 @@ label {
     font-weight: bold;
 }
 textarea {
-    max-width: 100%;
+    max-width: 1000px;
+    min-width: 300px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
