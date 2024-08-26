@@ -55,6 +55,7 @@
     .container {
     flex-direction: column;
     width:100%;
+    padding: 5px;
     }
 
     .code-section,.media-section {
@@ -145,11 +146,21 @@ display: none; /* Initially hidden */
 
 .top-row-buttons div{
     display: flex;
+    box-sizing: border-box;
+    /* padding: 5px; */
+    gap: 5px;
+    margin-bottom: 5px;
+
 }
 
-.top-row-buttons div > * {
+/* .top-row-buttons div > * {
     margin: 0 5px;
-}
+} */
+
+/* .top-row-buttons button{
+    height:fit-content;
+    background-color: #3498db;
+} */
 
 
 
@@ -166,7 +177,7 @@ display: none; /* Initially hidden */
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
-  margin: 5px;
+  /* margin: 5px; */
 }
 
 /* Specific Styles for Buttons */
@@ -209,4 +220,9 @@ display: none; /* Initially hidden */
 #saved-codes:active {
   background-color: #ccc;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Inset shadow on click */
+}
+
+#save-btn{
+    height:100%;
+    /* box-sizing: border-box; */
 }
