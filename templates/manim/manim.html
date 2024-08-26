@@ -5,6 +5,13 @@
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!--CodeMirror for syntax highlighting--> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.8/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.8/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.8/mode/python/python.min.js"></script>
+
+
     <script>
         function ShowSpinner() {
             var spinner = document.getElementById('spinner');
@@ -68,7 +75,8 @@
             <form method="post" id="code-form">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="execute">
-                <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here">{{ previous_code }}</textarea><br>
+                <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here"
+                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">{{ previous_code }}</textarea><br>
                 <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
             </form>
         </div>
@@ -116,6 +124,13 @@
 {% endblock %}
 
 {% block extra_scripts %}
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            mode: 'python',
+            lineNumbers: true
+        });
+    </script>
+    
     <script>
         // Get the modal
         var modal = document.getElementById("save-modal");
