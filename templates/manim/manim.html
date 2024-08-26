@@ -5,11 +5,25 @@
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme-button.css' %}">
 
-    <!--CodeMirror for syntax highlighting--> 
+   <!--CodeMirror for syntax highlighting--> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.8/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.8/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.8/mode/python/python.min.js"></script>
+
+  <!-- Import themes -->
+    <!-- Ecilpse  --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/theme/eclipse.min.css">
+    <!-- Dracula --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/theme/dracula.min.css">
+    <!-- Monokai --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/monokai.min.css">
+    
+  
+
+  <!-- auto-complete -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/show-hint.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/show-hint.min.js"></script>
+    
+
 
 
     <script>
@@ -51,24 +65,35 @@
     <div class="container">
         <div class="code-section">
             <div class="top-row-buttons">
-                <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="form_type" value="save_current">
-                    <input type="hidden" name="hidden_code_current" id="hidden_code_current">
-                    <button type="submit" id="save-btn">Save</button>
-                </form>
-        
-                <button type="button" id="save-new-btn">New Project</button>
-        
-                <!-- Dropdown to open saved codes -->
-                <select id="saved-codes">
-                    <option value="" disabled selected>Open</option>
-                    {% for code in saved_codes %}
-                    <option value="{{ code.id }}">{{ code.name }}</option>
-                    {% endfor %}
-                </select>
-                <p id="noOptionsMessage" style="display: none;">No Projects saved</p>
-                <br><br>
+                <div>
+                    <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="save_current">
+                        <input type="hidden" name="hidden_code_current" id="hidden_code_current">
+                        <button type="submit" id="save-btn">Save</button>
+                    </form>
+            
+                    <button type="button" id="save-new-btn">New Project</button>
+            
+                    <!-- Dropdown to open saved codes -->
+                    <select id="saved-codes">
+                        <option value="" disabled selected>Open</option>
+                        {% for code in saved_codes %}
+                        <option value="{{ code.id }}">{{ code.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p id="noOptionsMessage" style="display: none;">No Projects saved</p>
+                    <br><br>
+                </div>
+
+                <div>
+                    <!-- <button id="toggle-theme">Toggle Theme</button> -->
+                    <label class="theme-toggle">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
                 
             </div>
     
@@ -96,7 +121,6 @@
             </div>
         </div>
 
-        <div class="resizer"></div>
 
         <div class="media-section">
             {{ result_message }}
@@ -121,15 +145,38 @@
             {% endif %}
         </div>
     </div>
+
+
+  
 {% endblock %}
 
 {% block extra_scripts %}
+    
+
     <script>
         var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
             mode: 'python',
-            lineNumbers: true
+            lineNumbers: true,
+            tabSize: 4,
+            value: 'from manim import*',
+            theme: 'dracula',
+            extraKeys: {
+            "Ctrl-Space": "autocomplete"  // Bind autocomplete to Ctrl-Space
+            }
         });
     </script>
+
+<script>
+    var toggle_button = document.getElementsByClassName('theme-toggle')[0];
+    toggle_button.addEventListener('change', function() {
+    var Box = toggle_button.getElementsByTagName('input')[0];    
+    if (Box.checked) {
+        editor.setOption("theme", "eclipse");  // Dark mode
+    } else {
+        editor.setOption("theme", "dracula");  // Light mode
+    }
+    });
+</script>
     
     <script>
         // Get the modal

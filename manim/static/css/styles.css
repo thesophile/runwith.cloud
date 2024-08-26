@@ -139,10 +139,15 @@ display: none; /* Initially hidden */
 
 
 .top-row-buttons{
+    display:flex;
+    justify-content: space-between;
+}
+
+.top-row-buttons div{
     display: flex;
 }
 
-.top-row-buttons > * {
+.top-row-buttons div > * {
     margin: 0 5px;
 }
 
