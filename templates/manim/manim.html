@@ -42,7 +42,7 @@
 
 {% block content %}
     <div class="container">
-        <div class="left-input">
+        <div class="code-section">
             <div class="top-row-buttons">
                 <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
                     {% csrf_token %}
@@ -65,7 +65,7 @@
                 
             </div>
     
-            <form method="post" id="code-form" class="item">
+            <form method="post" id="code-form">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="execute">
                 <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here">{{ previous_code }}</textarea><br>
@@ -88,7 +88,9 @@
             </div>
         </div>
 
-        <div class="item output-item">
+        <div class="resizer"></div>
+
+        <div class="media-section">
             {{ result_message }}
 
             {% if not result_message %}
