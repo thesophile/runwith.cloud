@@ -225,3 +225,6 @@ def get_code_text(request, code_id):
     set_current_code_name(code.name)
     print(f'Current code name set as {code.name}') 
     return JsonResponse({'code_text': code.code_text})
+
+def contact(request):
+    return render(request, 'contact.html')

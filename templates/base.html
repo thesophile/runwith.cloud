@@ -17,6 +17,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CloudPy Manim{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.jpg' %}">
+
+    <!-- For Font Awesome Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     
     <style>
         body {
@@ -45,6 +49,11 @@
         z-index: 1000; /* Ensure the navbar is above other content */
     }
 
+    nav a{
+        text-decoration: none;
+        color:white;
+    }
+
     .nav-left, .nav-center, .nav-right {
         display: flex;
         align-items: center;
@@ -65,6 +74,39 @@
     .nav-left a:hover, .nav-right a:hover {
         background-color: #3a6a85; /* Darker blue for hover effect */
     }
+
+
+ 
+
+    .menu {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Hide menu on mobile and show hamburger icon */
+    .hamburger {
+        display: none;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .menu {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            background-color: rgb(0, 93, 119);
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .hamburger {
+            display: block;
+        }
+}
+
           
     </style>
 
@@ -77,21 +119,27 @@
 <body>
     <nav>
         <div class="nav-left">
-            <a href="/">Home</a>
+            <a href="/"><i class="fas fa-home"></i></a>
         </div>
         <div class="nav-center">
-            Cloudpy Manim beta
+            <a href="/manim">Cloudpy Manim beta</a>
         </div>
         <div class="nav-right">
             {% if user.is_authenticated %}
                 <p>Welcome, {{ user.username }}!</p>
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a> |
-                <a href="{% url 'signup' %}">Signup</a>
             {% endif %}
+            <div class="menu">
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
+                <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+            <div class="hamburger" onclick="toggleMenu()">
+                &#9776;
+            </div>
         </div>
     </nav>
+    
 
     
         {% block content %}
@@ -120,6 +168,21 @@
     {% endif %}
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            if (menu.style.display === 'flex') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'flex';
+            }
+        }
+
+    </script>
+    
+    
     {% block extra_scripts %}
     <!-- Additional scripts specific to pages extending this base template -->
     {% endblock %}
