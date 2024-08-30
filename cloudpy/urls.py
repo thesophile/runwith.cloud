@@ -30,4 +30,6 @@ urlpatterns = [
     path('login/', accounts_view.login_view, name='login'),
     path('logout/', accounts_view.logout_view, name='logout'),
     path('manim/',include('manim.urls')),
+    path('donate/', home_view.donate, name='donate'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
