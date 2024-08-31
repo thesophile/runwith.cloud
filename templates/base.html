@@ -30,189 +30,15 @@
     <!-- For Font Awesome Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    
-    <style>
-        body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f0f0f0;
-        color: #333; /* Dark gray text color */
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        box-sizing: border-box;
-    }
-
-    nav {
-        background-color: #5183a0; /* Custom blue color */
-        padding: 10px 0px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        box-sizing: border-box;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000; /* Ensure the navbar is above other content */
-    }
-
-    nav a{
-        text-decoration: none;
-        color:white;
-    }
-
-    .nav-left, .nav-center, .nav-right {
-        display: flex;
-        align-items: center;
-    }
-
-    .nav-left a, .nav-right a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-    }
-
-    .nav-center {
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-    }
-
-    .nav-left a:hover, .nav-right a:hover {
-        background-color: #3a6a85; /* Darker blue for hover effect */
-    }
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
 
-    /* Hide menu on mobile and show hamburger icon */
-    .hamburger {
-        display: none;
-        cursor: pointer;
-    }
-
-    @media (max-width: 768px) {
-            .menu {
-                display: none;
-                flex-direction: column;
-                gap: 0;
-                background-color: rgb(0, 93, 119);
-                position: absolute;
-                top: 60px;
-                right: 0;
-                width: 200px;
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            }
-
-            .hamburger {
-                display: block;
-                color: white;
-                padding:10px;
-            }
-    }
-
-    .menu {
-        display: flex;
-        gap: 1rem;
-        position: relative;
-    }
-
-    .dropdown {
-        display: flex;
-        flex-direction:column;
-        align-items: left; 
-        position: relative;
-    }
-
-    .dropbtn {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        cursor: pointer;
-    }
-
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #5183a0; /* Same as the navbar color */
-        min-width: 160px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        flex-direction: column;
-        left:0;
-        top:100%;
-    }
-
-    .dropdown-content a {
-        color: white;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-    }
-
-    .dropdown-content a:hover {
-        background-color: #3a6a85; /* Darker blue for hover effect */
-    }
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-
-    /* Hide menu on mobile and show hamburger icon */
-    @media (max-width: 768px) {
-        .menu {
-            display: none;
-            flex-direction: column;
-            gap: 0;
-            background-color: rgb(0, 93, 119);
-            position: absolute;
-            top: 60px;
-            right: 0;
-            width: 200px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .menu a {
-            padding: 10px;
-        }
-
-        .hamburger {
-            display: block;
-            color: white;
-            padding: 10px;
-        }
-
-        .dropbtn{
-            background-color: #3a6a85; 
-        }
-
-        .dropdown-content {
-            box-shadow: none;
-            width: 100%;
-
-            display: block; /* Always display dropdown content on mobile */
-            position: static; /* Remove absolute positioning on mobile */
-            background-color: rgb(0, 93, 119); /* Same as the menu */
-            padding-left: 5px; /* Indent slightly to the right */
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown-content a {
-            padding: 10px;
-        }
-    }  
-
-</style>
-
-    
     {% block extra_head %}
     <!-- Additional scripts or styles specific to pages extending this base template -->
     {% endblock %}
     
 </head>
+
 <body>
     <nav>
         <div class="nav-left">
@@ -226,7 +52,7 @@
             {% if user.is_authenticated %}
                 <p>Welcome, {{ user.username }}!</p>
             {% endif %}
-            <div class="menu">
+            <div class="menu hidden">
                 <a href="{% url 'contact' %}">Contact</a>
                 <div class="dropdown">
                     <a href="#" class="dropbtn">Account &#9662;</a>
@@ -237,7 +63,7 @@
                     </div>
                 </div>
             </div>
-            <div class="hamburger" onclick="toggleMenu()">
+            <div class="hamburger">
                 &#9776;
             </div>
         </div>
@@ -274,14 +100,26 @@
 
     <script>
         
-        function toggleMenu() {
-            const menu = document.querySelector('.menu');
-            if (menu.style.display === 'flex') {
-                menu.style.display = 'none';
-            } else {
-                menu.style.display = 'flex';
-            }
-        }
+       
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const menu = document.getElementsByClassName('menu')[0];
+            const hamburger = document.getElementsByClassName('hamburger')[0];
+
+            // Toggle menu visibility
+            hamburger.addEventListener('click', (e) => {
+                e.stopPropagation();  // Prevent event from bubbling up to the document
+                menu.classList.toggle('hidden');
+            });
+
+            // Click outside menu to hide it
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+
 
     </script>
     
