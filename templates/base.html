@@ -101,28 +101,26 @@
     <script>
         
         document.addEventListener('DOMContentLoaded', () => {
-        const menu = document.getElementsByClassName('menu')[0];
-        const hamburger = document.getElementsByClassName('hamburger')[0];
+            const menu = document.getElementsByClassName('menu')[0];
+            const hamburger = document.getElementsByClassName('hamburger')[0];
 
-        // Toggle menu visibility
-        hamburger.addEventListener('click', (e) => {
-            e.stopPropagation();  // Prevent event from bubbling up to the document
-            if (menu.style.display === 'none') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
+            // Toggle menu visibility
+            hamburger.addEventListener('click', (e) => {
+                e.stopPropagation();  // Prevent event from bubbling up to the document
+                if (menu.style.display === 'none') {
+                    menu.style.display = 'block';
+                } else {
+                    menu.style.display = 'none';
+                }
+            });
+
+            // Click outside menu to hide it
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                    menu.style.display = 'none';
+                }
+            });
         });
-
-        // Click outside menu to hide it
-        document.addEventListener('click', (e) => {
-            if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
-                menu.style.display = 'none';
-            }
-        });
-    });
-
- 
 
     </script>
     
