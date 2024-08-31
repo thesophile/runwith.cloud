@@ -52,7 +52,7 @@
             {% if user.is_authenticated %}
                 <p>Welcome, {{ user.username }}!</p>
             {% endif %}
-            <div class="menu hidden">
+            <div class="menu">
                 <a href="{% url 'contact' %}">Contact</a>
                 <div class="dropdown">
                     <a href="#" class="dropbtn">Account &#9662;</a>
@@ -100,26 +100,29 @@
 
     <script>
         
-       
-
         document.addEventListener('DOMContentLoaded', () => {
-            const menu = document.getElementsByClassName('menu')[0];
-            const hamburger = document.getElementsByClassName('hamburger')[0];
+        const menu = document.getElementsByClassName('menu')[0];
+        const hamburger = document.getElementsByClassName('hamburger')[0];
 
-            // Toggle menu visibility
-            hamburger.addEventListener('click', (e) => {
-                e.stopPropagation();  // Prevent event from bubbling up to the document
-                menu.classList.toggle('hidden');
-            });
-
-            // Click outside menu to hide it
-            document.addEventListener('click', (e) => {
-                if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
-                    menu.classList.add('hidden');
-                }
-            });
+        // Toggle menu visibility
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();  // Prevent event from bubbling up to the document
+            if (menu.style.display === 'none') {
+                menu.style.display = 'block';
+            } else {
+                menu.style.display = 'none';
+            }
         });
 
+        // Click outside menu to hide it
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+    });
+
+ 
 
     </script>
     

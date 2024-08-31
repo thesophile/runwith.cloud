@@ -64,9 +64,7 @@ nav a{
 }
 
 
-.hidden{
-    display:none;
-}
+ 
 
 .dropdown {
     display: flex;
@@ -111,6 +109,7 @@ nav a{
 
 @media (max-width: 768px) { /* Mobile devies*/
     .menu {
+        display:none;
         flex-direction: column;
         gap: 0;
         background-color: rgb(0, 93, 119);
