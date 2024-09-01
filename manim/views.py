@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from .utils import *
 from .cache_utils import *
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import Code 
 
@@ -228,3 +229,13 @@ def get_code_text(request, code_id):
 
 def contact(request):
     return render(request, 'contact.html')
+
+# update the django varible 'previous_code' when user opens a code 
+@csrf_exempt
+def update_code(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        new_code = data.get('code_text')
+        save_to_cache(new_code) 
+        return JsonResponse({'status': 'success', 'code_text': new_code})
+    return JsonResponse({'status': 'failed'})

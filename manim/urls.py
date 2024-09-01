@@ -8,5 +8,6 @@ urlpatterns = [
     path('save_new_code/', views.save_new_code, name='save_new_code'),
     path('save_current_code/', views.save_current_code, name='save_current_code'),
     path('contact/', views.contact, name='contact'),
+    path('update-code/', views.update_code, name='update_code'),
 
 ]

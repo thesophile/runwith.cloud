@@ -152,11 +152,11 @@
 
 {% block extra_scripts %}
 
-{% if previous_code %}
+<!-- {% if previous_code %}
 <script>
-    const previous_code = "{{ previous_code }}";
+    const previous_code = `"{{ previous_code }}"`;
 </script>
-{% endif %}
+{% endif %} -->
     
 
     <script>
@@ -170,7 +170,7 @@
             "Ctrl-Space": "autocomplete"  // Bind autocomplete to Ctrl-Space
             }
         });
-
+        
         // editor.setValue(previous_code);
         // editor.setOption('theme', 'dracula');
     </script>
@@ -247,19 +247,53 @@
             }
         }
 
+        //Open Codes
         openDropdown.onchange = function() {
             var codeId = this.value;
             if (codeId) {
                 fetch(`get-code/${codeId}/`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) { //to get readeable error from ajax fetch request 
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    document.getElementById("code").value = data.code_text;
-                    current_code_present = true;
-                });
+                    console.log('Received code text:', data.code_text);
+                    // document.getElementById("code").value = data.code_text;
+                    editor.setValue(data.code_text);
+
+
+                    // Send updated code to server
+                    return fetch('update-code/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is included
+                        },
+                        body: JSON.stringify({ code_text: data.code_text })
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    console.log('Update status:', result.status);
+                    if (result.status === 'success') {
+                        console.log('Django variable updated:', result.code_text);
+                    } else {
+                        console.log('Failed to update Django variable');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             } else {
-                document.getElementById("code").value = '';
+                // document.getElementById("code").value = '';
             }
         }
+
 
         saveBtn.onclick = function(event) {
             if (!isAuthenticated) {
