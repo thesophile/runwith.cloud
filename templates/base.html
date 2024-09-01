@@ -98,9 +98,16 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script>
-        
-        document.addEventListener('DOMContentLoaded', () => {
+<script>
+
+    const menu = document.getElementsByClassName('menu')[0];
+
+    function detectDevice() {
+        if (window.innerWidth <= 768) {
+            // Mobile device
+            menu.style.display = 'none';
+
+            document.addEventListener('DOMContentLoaded', () => {
             const menu = document.getElementsByClassName('menu')[0];
             const hamburger = document.getElementsByClassName('hamburger')[0];
             
@@ -108,10 +115,11 @@
             hamburger.addEventListener('click', (e) => {
                 e.stopPropagation();  // Prevent event from bubbling up to the document
                 if (menu.style.display === 'none') {
-                    menu.style.display = 'block';
+                    menu.style.display = 'flex';
                 } else {
                     menu.style.display = 'none';
                 }
+                console.log(menu.style.display);
             });
 
             // Click outside menu to hide it
@@ -121,8 +129,22 @@
                 }
             });
         });
+        } else {
+            // Desktop device
+            menu.style.display = 'flex';
+        }
+    }
 
-    </script>
+    // Call the function on load
+    detectDevice();
+
+    // event listener to handle screen resizing
+    window.addEventListener('resize', detectDevice);
+
+        
+    
+
+</script>
     
     
     {% block extra_scripts %}
