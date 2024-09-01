@@ -100,7 +100,7 @@
             <form method="post" id="code-form">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="execute">
-                <textarea name="code" id="code" rows="20" cols="50" placeholder="Enter Manim code here"
+                <textarea name="code" id="code" rows="20" cols="50" 
                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">{{ previous_code }}</textarea><br>
                 <input type="submit" value="Execute" onclick="ShowSpinner(); HidePlaceholder();">
             </form>
@@ -151,6 +151,12 @@
 {% endblock %}
 
 {% block extra_scripts %}
+
+{% if previous_code %}
+<script>
+    const previous_code = "{{ previous_code }}";
+</script>
+{% endif %}
     
 
     <script>
@@ -158,12 +164,15 @@
             mode: 'python',
             lineNumbers: true,
             tabSize: 4,
-            value: 'from manim import*',
+            // value: 'from manim import*',
             theme: 'dracula',
             extraKeys: {
             "Ctrl-Space": "autocomplete"  // Bind autocomplete to Ctrl-Space
             }
         });
+
+        // editor.setValue(previous_code);
+        // editor.setOption('theme', 'dracula');
     </script>
 
 <script>
