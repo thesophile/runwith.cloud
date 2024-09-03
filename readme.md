@@ -27,8 +27,8 @@ Run Python libraries online with ease
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/thesophile/cloudpy.git
-   cd cloudpy
+   git clone https://github.com/thesophile/CloudPy.git 
+   cd CloudPy
    ```
 2. **Create a Virtual Environment:**
 
