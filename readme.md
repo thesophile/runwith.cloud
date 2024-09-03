@@ -19,6 +19,7 @@ Run Python libraries online with ease
 - **Python:** 3.11 (tested), but other versions may work.
 - **Virtualenv** (optional but recommended)
 - **Git**
+- **pip**: For installing Python packages.
 
  
 
@@ -26,7 +27,7 @@ Run Python libraries online with ease
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/cloudpy.git
+   git clone https://github.com/thesophile/cloudpy.git
    cd cloudpy
    ```
 2. **Create a Virtual Environment:**
