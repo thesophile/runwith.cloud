@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return render(request,'hello.html',{'name':'Abhinav'}) 
+    return render(request,'index.html') 
  
 def donate(request):
     return render(request, 'donate.html')
