@@ -1,18 +1,20 @@
 # CloudPy
 
-Run Python libraries online with ease
- 
-> ## Key Features
-> 
-> - No need to install libraries or manage dependencies.
-> - Continue your work seamlessly across different devices.
-> - Run in mobile phones and tablets with ease.
->   
-> Visit [cloudpy.online](https://cloudpy.online) to use the website.
+ Run Python libraries online with ease
+
+ ![cloudpy2](https://github.com/user-attachments/assets/1a9ee16a-3812-4ab7-82ea-43bb53d383de)
+
+## Key Features
+  
+ - No need to install libraries or manage dependencies.
+ - Continue your work seamlessly across different devices.
+ - Run in mobile phones and tablets with ease.
+   
+ Visit [cloudpy.online](https://cloudpy.online) to use the website.
  
 
 
-## Getting Started
+## Local Installation
 
 ### Prerequisites
 
