@@ -47,7 +47,9 @@
 
    **Install Docker**
 
-   [Debian](https://docs.docker.com/engine/install/debian/)
+  - [Debian](https://docs.docker.com/engine/install/debian/)
+    
+  - [Other systems](https://docs.docker.com/engine/install/)
     
 5. **Run Migrations:**
 
