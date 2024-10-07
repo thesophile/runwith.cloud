@@ -44,14 +44,18 @@
     ```
     pip install -r requirements.txt
     ```
+
+   **Install Docker**
+
+   [Debian](https://docs.docker.com/engine/install/debian/)
     
-4. **Run Migrations:**
+5. **Run Migrations:**
 
     ```
     python manage.py migrate
     ```
     
-5. **Start the Development Server:**
+6. **Start the Development Server:**
 
     ```
     python manage.py runserver
