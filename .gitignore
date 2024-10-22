@@ -4,7 +4,7 @@
 manim/python_code_files/*
 !manim/python_code_files/keep
 
-manimenv/
+myenv/
 
 # Ignore all contents of the media folder except for the keep file
 media/*
