@@ -2,7 +2,7 @@
 
  Run Python libraries online with ease
 
- <img src="https://github.com/user-attachments/assets/1a9ee16a-3812-4ab7-82ea-43bb53d383de" alt="screenshot" width="800" />
+ <img src="https://github.com/user-attachments/assets/6c703603-9cfc-483b-9f83-efb3fe6d9253" alt="screenshot" width="800" />
 
 ## Key Features
   
