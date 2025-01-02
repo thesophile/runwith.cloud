@@ -191,30 +191,77 @@ def save_new_code(request):
         # Handle case where name is not provided (optional)
     return redirect('manim_home')  # Redirect back to execute page after saving
 
+## Old save function
+# def save_current_code(request):
+#     if request.method == 'POST' and request.POST.get('form_type') == 'save_current':
+#         print('save button clicked')
+#         new_code_text = request.POST.get('hidden_code_current')
+#         save_to_cache(new_code_text)
+#         print(new_code_text)
+#         current_code_name = get_current_code_name()
+#         print(f'current_code_name:{current_code_name}')
+#         if current_code_name:
+#             # Save the code with the entered name
+#             Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
+#             print('code saved')
+#             #save code to display locally
+             
+#             # return redirect('home')  # Redirect to home page or wherever you want
+#         else:
+             
+#             print('current_code_name not defined')
+    
+#     return redirect('manim_home')  # Redirect back to execute page after saving
+
+# @csrf_exempt
+# def save_current_code(request):
+#     print('save button clicked')
+#     new_code_text = request.POST.get('code_text')
+#     save_to_cache(new_code_text)
+#     print(new_code_text)
+#     current_code_name = get_current_code_name()
+#     print(f'current_code_name:{current_code_name}')
+#     if current_code_name:
+#         # Save the code with the entered name
+#         Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
+#         print('code saved')
+#         #save code to display locally
+        
+#         # return redirect('home')  # Redirect to home page or wherever you want
+#     else:
+        
+#         print('current_code_name not defined')
+    
+#     return redirect('manim_home')  # Redirect back to execute page after saving   
+         
+
+@csrf_exempt  # Only if CSRF is causing issues during testing
 def save_current_code(request):
-    if request.method == 'POST' and request.POST.get('form_type') == 'save_current':
-        print('save button clicked')
-        new_code_text = request.POST.get('hidden_code_current')
-        save_to_cache(new_code_text)
-        print(new_code_text)
-        current_code_name = get_current_code_name()
-        print(f'current_code_name:{current_code_name}')
-        if current_code_name:
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_code_text = data.get('code_text')
+
+            save_to_cache(new_code_text)
+            print(new_code_text)
+            
+            if not new_code_text:
+                return JsonResponse({'status': 'error', 'message': 'Code text is required'}, status=400)
+
+            current_code_name = get_current_code_name()
+
+            if not current_code_name:
+                print ("No current Code name") 
+                print(f'current_code_name:{current_code_name}')
+            
             # Save the code with the entered name
             Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
             print('code saved')
-            #save code to display locally
-             
-            # return redirect('home')  # Redirect to home page or wherever you want
-        else:
-             
-            print('current_code_name not defined')
-    
-    return redirect('manim_home')  # Redirect back to execute page after saving
-
-   
-         
-
+            
+            return JsonResponse({'status': 'success'})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
     
 
 # def get_code(request, code_id):
@@ -225,7 +272,7 @@ def get_code_text(request, code_id):
     code = Code.objects.get(id=code_id)
     set_current_code_name(code.name)
     print(f'Current code name set as {code.name}') 
-    return JsonResponse({'code_text': code.code_text})
+    return JsonResponse({'code_text': code.code_text,'code_name':code.name})
 
 def contact(request):
     return render(request, 'contact.html')
@@ -239,3 +286,30 @@ def update_code(request):
         save_to_cache(new_code) 
         return JsonResponse({'status': 'success', 'code_text': new_code})
     return JsonResponse({'status': 'failed'})
+
+
+def set_code_name(request):
+    if request.method == "POST":
+        import json
+        data = json.loads(request.body)  # Parse JSON data from the request
+        code_name = data.get('code_name')
+
+        # Call your util.py function
+        result = set_current_code_name(code_name)
+
+        # Respond with success
+        return JsonResponse({"status": "success", "message": "Code name set successfully", "result": result})
+
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
+
+def get_code_name(request):
+    if request.method == "POST":
+        import json
+
+        # Call your util.py function
+        result = get_current_code_name()
+
+        # Respond with success
+        return JsonResponse({"status": "success", "message": "Code name set successfully", "result": result})
+
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)

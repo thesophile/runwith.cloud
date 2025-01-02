@@ -229,6 +229,7 @@
 
         document.getElementById('save-new-form').addEventListener('submit', function(event) {
             var visible_code = document.getElementById('code').value;
+            // console.log(`visible_code: ${visible_code}`);
             var hidden_code= document.getElementById('hidden_code_new');
             hidden_code.value = visible_code;
         });
@@ -250,8 +251,9 @@
         //Open Codes
         openDropdown.onchange = function() {
             var codeId = this.value;
+            console.log(`CodeId for seleted dropdown: ${codeId}`)
             if (codeId) {
-                fetch(`get-code/${codeId}/`)
+                fetch(`get_code_text/${codeId}/`)
                 .then(response => {
                     if (!response.ok) { //to get readeable error from ajax fetch request 
                         return response.text().then(text => { throw new Error(text); });
@@ -262,6 +264,38 @@
                     console.log('Received code text:', data.code_text);
                     // document.getElementById("code").value = data.code_text;
                     editor.setValue(data.code_text);
+
+                    // set current code present as true so that it enables updating/saving the code 
+
+                    function setCodeName(codeName) {
+                        fetch('set_code_name/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Ensure CSRF token is included
+                            },
+                            body: JSON.stringify({ code_name: codeName }) // Pass the data
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                console.log(data.message);
+                            } else {
+                                console.error(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }
+
+                    // Execute it
+                    console.log(`code_name: ${data.code_name}`)
+                    setCodeName(data.code_name);
+
+                    const inputCode = document.getElementById('code').value;
+                    console.log('inputCode:',inputCode)
+                    // console.log(`current_code_present: ${current_code_present}`);
 
 
                     // Send updated code to server
@@ -294,23 +328,171 @@
             }
         }
 
+        saveBtn.onclick = async function (event) {
+            event.preventDefault();
 
-        saveBtn.onclick = function(event) {
             if (!isAuthenticated) {
-                event.preventDefault();
                 alert("You have to log in to do that");
-            } else if(!current_code_present){
-                event.preventDefault();
-                alert('Create new project first');
-                console.log(current_code_present);
-            } else {
-                var visible_code = document.getElementById('code').value;
-                var hidden_code= document.getElementById('hidden_code_current');
-                hidden_code.value = visible_code;
-                console.log(`hidden_code_value: ${hidden_code.value}`);
-                SaveCurrentForm.submit();
+                return;
             }
-        }
+
+            // Get code name first
+            try {
+                const response = await fetch('get_code_name/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const codeName = data.result;
+                console.log('Code Name:', codeName);
+
+                if (!codeName) {
+                    alert('Create new project first');
+                    console.log('getCodeName returned Null');
+                    return;
+                }
+
+                // Get code from CodeMirror editor
+                const inputCode = editor.getValue();
+                console.log('Input code:', inputCode);
+
+                if (!inputCode) {
+                    alert('Input cannot be empty.');
+                    return;
+                }
+
+                // Save the code
+                const saveResponse = await fetch('save_current_code/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify({
+                        code_text: inputCode,
+                        code_name: codeName,
+                        form_type: 'save_current'
+                    }),
+                });
+
+                if (saveResponse.ok) {
+                    alert('Code saved successfully!');
+                } else {
+                    const errorText = await saveResponse.text();
+                    console.log('Error response:', errorText);
+                    alert('Failed to save code.');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An unexpected error occurred while saving.');
+            }
+        };
+        
+
+//         saveBtn.onclick = function (event) {
+
+//             // Check if there is a code_name, else we can't save
+//             async function getCodeName() {
+//                 try {
+//                     const response = await fetch('get_code_name/', {
+//                         method: 'POST',
+//                         headers: {
+//                             'Content-Type': 'application/json',
+//                             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+//                         },
+//                     });
+
+//                     if (!response.ok) {
+//                         throw new Error(`HTTP error! Status: ${response.status}`);
+//                     }
+
+//                     const data = await response.json();
+//                     return data.result;
+//                 } catch (error) {
+//                     console.error('Error:', error);
+//                     return null; // Return null or handle the error as required
+//                 }
+//             }
+
+//             // get code name
+//             (async () => {
+//                 const result = await getCodeName();
+//                 console.log('Code Name:', result);
+//             })();
+                
+//             // result = getCodeName(); //check if current_code_present   
+//             // console.log(`result: ${result}`)        
+          
+//             if (!isAuthenticated) {
+//                 event.preventDefault();
+//                 alert("You have to log in to do that");
+//             } else if (!result) {
+//                 event.preventDefault();
+//                 alert('Create new project first');
+//                 console.log(`result - getCodeName returned Null`);
+//             } else {
+
+//                 // const inputCode = document.getElementById('code').value ;
+//                 const inputCode = editor.getValue(); // Get code from CodeMirror editor instead of textarea
+//                 console.log(`inputCode: ${inputCode}`);
+
+//                 if (!inputCode) {
+//                     alert('Input cannot be empty.');
+//                     return;
+//                 }
+
+//                 // Wrap the fetch in an IIFE to allow async/await
+//                 (async function () {
+//                     try {
+//                         const response = await fetch('save_current_code/', {
+//                             method: 'POST',
+//                             headers: {
+//                                 'Content-Type': 'application/json',
+//                             },
+//                             body: JSON.stringify({ code_text: inputCode }),
+//                         });
+
+//                         if (response.ok) {
+//                             alert('Value saved successfully!');
+//                         } else {
+//                             alert('Failed to save value.');
+//                             console.log('Error response:', await response.text());
+//                         }
+//                     } catch (error) {
+//                         console.error('Error saving value:', error);
+//                         alert('An unexpected error occurred while saving.');
+//                     }
+//                 })();
+//             }
+// };
+
+// OLD saveButton script
+// saveBtn.onclick = function (event) {
+//             if (!isAuthenticated) {
+//                 event.preventDefault();
+//                 alert("You have to log in to do that");
+//             } else if (!current_code_present) {
+//                 event.preventDefault();
+//                 alert('Create new project first');
+//                 console.log(`current_code_present: ${current_code_present}`);
+//             } else {
+//                 var visible_code = document.getElementById('code').value;
+//                 var hidden_code= document.getElementById('hidden_code_current');
+//                 hidden_code.value = visible_code;
+//                 console.log(`hidden_code_value: ${hidden_code.value}`);
+//                 SaveCurrentForm.submit();
+//             }
+// }
+
     </script>
 {% endblock %}
  
