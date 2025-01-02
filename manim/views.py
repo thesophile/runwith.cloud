@@ -235,7 +235,7 @@ def save_new_code(request):
 #     return redirect('manim_home')  # Redirect back to execute page after saving   
          
 
-@csrf_exempt  # Only if CSRF is causing issues during testing
+@csrf_exempt  # testing
 def save_current_code(request):
     if request.method == 'POST':
         try:

@@ -252,6 +252,8 @@
         openDropdown.onchange = function() {
             var codeId = this.value;
             console.log(`CodeId for seleted dropdown: ${codeId}`)
+
+            //Get code_text and pass it to the editor
             if (codeId) {
                 fetch(`get_code_text/${codeId}/`)
                 .then(response => {
@@ -265,8 +267,7 @@
                     // document.getElementById("code").value = data.code_text;
                     editor.setValue(data.code_text);
 
-                    // set current code present as true so that it enables updating/saving the code 
-
+                    // set current code name so that it enables updating/saving the code 
                     function setCodeName(codeName) {
                         fetch('set_code_name/', {
                             method: 'POST',
@@ -299,6 +300,7 @@
 
 
                     // Send updated code to server
+                    // This is to ensure that even if the site is refreshed, the selected code remains.
                     return fetch('update-code/', {
                         method: 'POST',
                         headers: {
@@ -328,6 +330,7 @@
             }
         }
 
+        // Save Button
         saveBtn.onclick = async function (event) {
             event.preventDefault();
 
