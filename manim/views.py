@@ -80,7 +80,15 @@ def run_docker_command(class_name):
         result_message = ''
 
     except Exception as e:
-        result_message = f"Error executing shell command: {e}\nTraceback: {traceback.format_exc()}"
+        result_message = (
+            "Error executing shell command:\n"
+            f"{type(e).__name__}: {e}"
+        )
+        #full traceback for logs:
+        full_tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+        print(result_message)
+        print("---- FULL TRACE FOR LOG ----")
+        print(full_tb)
 
 
     return result_message    
