@@ -47,9 +47,26 @@
 
    **Install Docker**
 
-  - [Debian](https://docs.docker.com/engine/install/debian/)
+    - [Debian](https://docs.docker.com/engine/install/debian/)
     
-  - [Other systems](https://docs.docker.com/engine/install/)
+    - [Other systems](https://docs.docker.com/engine/install/)
+
+   **Allow docker client to talk to docker**
+
+     ```
+     sudo usermod -aG docker $USER
+     newgrp docker
+     ```
+
+    **Give permission for docker to write to media**
+
+    ```
+    sudo chown -R <container_UID>:<container_GID> media
+    ``` 
+    where container_UID and container_GID are both `1000`. but you can check with:
+    ```
+    docker run --rm manimcommunity/manim id
+    ```
     
 5. **Run Migrations:**
 
