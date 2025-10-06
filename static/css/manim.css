@@ -1,0 +1,69 @@
+nav {
+        height: fit-content; /* Ensure the height is not fixed */
+    }
+    .container {
+        margin: 80px 0 0 0;
+        flex-grow: 1;
+        display: flex;
+        height: calc(100vh - 80px);
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .nav-right {
+        padding:2px;
+    }
+
+    @media screen and (min-width: 768px) {
+        .code-section, .media-section {
+            padding: 10px;
+            width: 50%;
+        }
+    }
+
+    /*buttons */
+    #open-button {
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    .dropdown-list {
+        border: 1px solid #ccc;
+        padding: 0;
+        margin-top: 2px;
+        width: max-content;
+        background: white;
+        position: absolute;
+        z-index: 1000;
+    }
+
+    .dropdown-item {
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+    }
+
+
+    
+    /* code area */
+    .code-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #code-form {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .CodeMirror {
+        flex-grow: 1;
+        height: auto;
+        margin-bottom: 30px;
+    }

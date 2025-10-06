@@ -6,20 +6,15 @@
 .container {
     display: flex;
     width: 100%;
-    max-width: 1200px;
-    margin: 80px auto 20px; /* Adjust based on navbar height */
     padding: 20px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
 }
 
 
 .code-section, .media-section {
     /* flex: 1; */
-    width:50%;
-    padding: 10px;
     overflow: auto;
     /* resize: horizontal; */
 }
@@ -188,11 +183,12 @@ display: none; /* Initially hidden */
 }
 
 /* Specific Styles for Dropdown */
-#saved-codes {
+#saved-codes, #examples-dropdown {
   /* appearance: none; Removes the default arrow */
   text-align: left; /* Aligns the text to the left to maintain a dropdown feel */
   padding-right: 30px; /* Extra padding to make space for the custom arrow */
   position: relative;
+  width: fit-content;
 }
 
 /* Custom Arrow for Dropdown */
