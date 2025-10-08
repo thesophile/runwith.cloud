@@ -45,6 +45,7 @@
     <div class="container">
         <div class="code-section">
             <div class="top-row-buttons">
+                <!-- left side -->
                 <div>
                     <!-- save button -->
                     <form action="{% url 'save_current_code' %}" method="post" id="save-current-form">
@@ -57,60 +58,38 @@
                     <!-- New button -->
                     <button type="button" id="save-new-btn">New</button>
                                         
-
-                    <!-- Dropdown to open saved codes -->
-                    <!-- <select id="saved-codes">
-                        <option value="" disabled selected>Open</option>
-                        {% for code in saved_codes %}
-                        <option value="{{ code.id }}">{{ code.name }}</option>
-                        {% endfor %}
-                    </select> -->
-
                     <!-- Open Button -->
                     <button id="open-button">Open</button>
 
-                    <!-- Dropdown list -->
+                    <!-- Open list -->
                     <div id="open-list" class="dropdown-list" style="display: none;">
                         {% for code in saved_codes %}
                         <div class="dropdown-item" data-id="{{ code.id }}">{{ code.name }}</div>
                         {% endfor %}
                     </div>
 
-                    <!-- Optional message when no codes -->
-                    <div id="no-options-message" style="display: none; color: red;">
-                        You have no saved projects. Create a new project first.
-                    </div>
-
-
-    
                     
-                    <br><br>
-
+                    <!-- Examples button -->
                     <button id="examples-button">Examples</button>
 
-                 <!-- Dropdown to open example codes -->
-                <div id="examples-list" class="dropdown-list" style="display: none;">
-                    <div class="dropdown-item" data-name="BraceAnnotation">BraceAnnotation</div>
-                    <div class="dropdown-item" data-name="BooleanOperations">BooleanOperations</div>
-                    <div class="dropdown-item" data-name="PointMovingOnShapes">PointMovingOnShapes</div>
-                    <div class="dropdown-item" data-name="MovingAngle">MovingAngle</div>
-                    <div class="dropdown-item" data-name="SinAndCosFunctionPlot">SinAndCosFunctionPlot</div>
+                    <!-- Example list -->
+                    <div id="examples-list" class="dropdown-list" style="display: none;">
+                        <div class="dropdown-item" data-name="BraceAnnotation">BraceAnnotation</div>
+                        <div class="dropdown-item" data-name="BooleanOperations">BooleanOperations</div>
+                        <div class="dropdown-item" data-name="PointMovingOnShapes">PointMovingOnShapes</div>
+                        <div class="dropdown-item" data-name="MovingAngle">MovingAngle</div>
+                        <div class="dropdown-item" data-name="SinAndCosFunctionPlot">SinAndCosFunctionPlot</div>
+                    </div>
+
+                    
                 </div>
 
-                    <!-- Dropdown to open example codes -->
-                    <!-- <select id="examples-dropdown">
-                        <option value="" disabled selected>Examples</option>
-                        <option value="BraceAnnotation">BraceAnnotation (Image)</option>
-                        <option value="BooleanOperations">BooleanOperations (Image)</option>
-                        <option value="PointMovingOnShapes">PointMovingOnShapes (Video)</option>
-                        <option value="MovingAngle">MovingAngle (Video)</option>
-                        <option value="SinAndCosFunctionPlot">SinAndCosFunctionPlot (Video)</option>
-                    </select> -->
-                </div>
-
+                <!-- right side -->
                 <div>
-                    <!-- <button id="toggle-theme">Toggle Theme</button> -->
+                    <!-- Run button -->
                     <input type="submit" value="Run" onclick="ShowSpinner(); HidePlaceholder();" form="code-form">
+
+                    <!-- Theme toggle button -->
                     <label class="theme-toggle">
                         <input type="checkbox">
                         <span class="slider"></span>

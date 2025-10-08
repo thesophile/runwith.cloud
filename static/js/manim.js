@@ -41,7 +41,7 @@ var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
 
         const openButton = document.getElementById('open-button');
         const openList = document.getElementById('open-list');
-        const noOptionsMessage = document.getElementById('no-options-message');
+        // const noOptionsMessage = document.getElementById('no-options-message');
 
         const examplesButton = document.getElementById('examples-button');
         const examplesList = document.getElementById('examples-list');
@@ -109,16 +109,17 @@ var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
                 alert('You will have to Log in to do that');
                 return;
             }
-
+            
             const options = openList.querySelectorAll('.dropdown-item');
+            console.log(options.length);
             if (options.length === 0) {
-                noOptionsMessage.style.display = "block";
+                alert("You have no saved projects. Create a new project first.");
                 return;
             } else {
-                noOptionsMessage.style.display = "none";
+                openList.style.display = openList.style.display === "none" ? "block" : "none";
             }
 
-            openList.style.display = openList.style.display === "none" ? "block" : "none";
+            
         };
 
         examplesButton.onclick = function(event) {

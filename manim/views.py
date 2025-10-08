@@ -38,27 +38,63 @@ def run_manim_command(image_name, base_dir, class_name):
     
     # Define the volumes
     volumes = {
-        f"{base_dir}/manim/python_code_files": {'bind': '/mnt/code', 'mode': 'rw'},
+        f"{base_dir}/manim/python_code_files": {'bind': '/mnt/code', 'mode': 'ro'},
         f"{base_dir}/media": {'bind': '/mnt/output', 'mode': 'rw'}
     }
     
     # Define the command with the appropriate paths
     docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{class_name}"
+
+    # Resource limits
+    mem_limit = "512m"     # 512MB memory
+    cpus = 0.8             # max 0.8 of 1 vCPU
+    pids_limit = 64        # max processes
+
+    # Timeout in seconds for long-running jobs
+    timeout_seconds = 120   # adjust based on your rendering needs
     
     try:
-        # Create and start the container
+        # Run container detached
         container = client.containers.run(
-            image_name,
-            docker_command,
+            image=image_name,
+            command=docker_command,
             volumes=volumes,
-            detach=True
+            detach=True,
+            user="manimuser",
+            # name="manim_container",
+            mem_limit=mem_limit,
+            nano_cpus=int(cpus * 1e9),  # docker-py uses nanoseconds
+            pids_limit=pids_limit,
+            network_disabled=True,       # disable network
+            security_opt=["no-new-privileges"],
+            read_only=False,
+            tmpfs={"/tmp": "rw,size=128m"},
+            remove=False                  # auto-remove container when done
         )
-        
-        # Wait for the container to finish and get the logs
-        result = container.wait()
+
+        start_time = time.time()
+        while True:
+            container.reload()
+            status = container.status
+            if status in ["exited", "dead"]:
+                break
+            if time.time() - start_time > timeout_seconds:
+                container.kill()
+                print("Container timed out and was killed!")
+                break
+            time.sleep(1)
+
+        # Get logs
         logs = container.logs().decode()
+        print("=== CONTAINER LOGS ===")
+        print(logs)
+
+    except docker.errors.ContainerError as e:
+        print(f"Container failed: {e}")
+    except docker.errors.APIError as e:
+        print(f"Docker API error: {e}")
     except Exception as e:
-        return f"Error: {str(e)}"
+        print(f"Unexpected error: {e}")
     finally:
         if container:
 
