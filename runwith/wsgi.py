@@ -1,5 +1,5 @@
 """
-WSGI config for cloudpy project.
+WSGI config for runwith project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cloudpy.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'runwith.settings')
 
 application = get_wsgi_application()
