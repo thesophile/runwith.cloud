@@ -45,7 +45,18 @@ INSTALLED_APPS = [
     'home',
     'manim',
     'accounts',
+    'django_q',
 ]
+
+Q_CLUSTER = {
+    'name': 'DjangORM',
+    'workers': 2,
+    'timeout': 600,
+    'retry': 1200,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

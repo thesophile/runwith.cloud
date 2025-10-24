@@ -1,0 +1,226 @@
+
+diff --git a/manim/views.py b/manim/views.py
+index 9032cf2..5977091 100644
+--- a/manim/views.py
++++ b/manim/views.py
+@@ -28,12 +28,13 @@ import docker
+ 
+ import traceback
+ 
+-
++from django_q.models import OrmQ, Task
+ 
+ 
+ 
+ def run_manim_command(image_name, base_dir, class_name):
+     client = docker.from_env()
++    container = None  # Initialize container to None
+ 
+     user_code = 'user_code.py'
+     
+@@ -70,26 +71,21 @@ def run_manim_command(image_name, base_dir, class_name):
+             security_opt=["no-new-privileges"],
+             read_only=False,
+             tmpfs={"/tmp": "rw,size=128m"},
+-            remove=False                  # auto-remove container when done
++            remove=False                  # do not auto-remove, we'll do it manually
+         )
+ 
+-        start_time = time.time()
+-        while True:
+-            container.reload()
+-            status = container.status
+-            if status in ["exited", "dead"]:
+-                break
+-            if time.time() - start_time > timeout_seconds:
+-                container.kill()
+-                print("Container timed out and was killed!")
+-                break
+-            time.sleep(1)
++        # Wait for the container to finish, with a timeout
++        result = container.wait(timeout=timeout_seconds)
++        exit_code = result.get('StatusCode', -1)
+ 
+         # Get logs
+         logs = container.logs().decode()
+         print("=== CONTAINER LOGS ===")
+         print(logs)
+ 
++        if exit_code != 0:
++            print(f"Container exited with non-zero status code: {exit_code}")
++
+     except docker.errors.ContainerError as e:
+         print(f"Container failed: {e}")
+     except docker.errors.APIError as e:
+@@ -98,12 +94,10 @@ def run_manim_command(image_name, base_dir, class_name):
+         print(f"Unexpected error: {e}")
+     finally:
+         if container:
+-
+-            # Remove the container
+             try:
+                 container.remove(force=True)
+             except Exception as e:
+-                return f"Error removing container: {str(e)}"
++                print(f"Error removing container: {e}")
+     
+     return logs
+ 
+@@ -192,9 +186,10 @@ def execute_code(request):
+ 
+         print(f'class name: {class_name}')
+ 
+-        taskid = async_task(run_docker_command, class_name)
++        task_id = async_task(run_docker_command, class_name)
+         print('Docker task started asynchronously')
+-        print(f'task id: {taskid}')
++        print(f'task id: {task_id}')
++        print(type(task_id), task_id)
+         result_message = ""
+ 
+         # print(f'previous code:{previous_code}')        
+@@ -208,6 +203,7 @@ def execute_code(request):
+                    'saved_codes':saved_codes,
+                    'request': request,
+                    'current_code_name':current_code_name,
++                   'task_id':task_id,
+                 }
+         return render(request, 'manim/manim.html',context)  
+          
+@@ -361,3 +357,25 @@ def get_code_name(request):
+         return JsonResponse({"status": "success", "message": "Code name set successfully", "result": result})
+ 
+     return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
++
++
++def get_task_status(task_id):
++    try:
++        # First, check if the task has completed or failed
++        task = Task.objects.filter(id=task_id).first()
++        if task:
++            return "done" if task.success else "failed"
++
++        # If it's not in Task, maybe it's still queued or running
++        # OrmQ stores payloads that include the UUID in the 'payload' field
++        if OrmQ.objects.filter(payload__contains=task_id).exists():
++            return "queued"
++
++        return "running"  # fallback if it’s not yet persisted
++    except Exception as e:
++        print("Error checking task:", e)
++        return "unknown"
++
++def task_status_view(request, task_id):
++    status = get_task_status(str(task_id))
++    return JsonResponse({'status': status})
+\ No newline at end of file
+diff --git a/templates/manim/manim.html b/templates/manim/manim.html
+index 32d0953..79d0117 100644
+--- a/templates/manim/manim.html
++++ b/templates/manim/manim.html
+@@ -132,12 +132,12 @@
+             {% if placeholder %}
+                 <img src="{% static 'img/placeholder.png' %}" alt="Image" id="placeholder">
+             {% elif "self.play" in previous_code or "self.wait" in previous_code %}
+-                <video id="result-video" controls style="display: none;">
++                <video id="result-video" controls >
+                     <source src="" type="video/mp4">
+                     Your browser does not support the video tag.
+                 </video>
+-                <a id="download-video" href="" class="download-btn" download style="display: none;">Download</a>
+-                <p id="loading-message-video">Generating video...</p>
++                <a id="download-video" href="" class="download-btn" download>Download</a>
++                <p id="loading-message-video" style="display: none;" >Generating video...</p>
+ 
+                 <script>
+                     const videoUrl = "{{ MEDIA_URL }}{{ class_name }}.mp4";
+@@ -145,9 +145,11 @@
+                     const videoSource = videoElement.getElementsByTagName('source')[0];
+                     const downloadVideo = document.getElementById('download-video');
+                     const loadingMessageVideo = document.getElementById('loading-message-video');
++                    const spinner = document.getElementById('spinner');
+ 
+                     videoElement.style.display = 'none';
+                     downloadVideo.style.display = 'none';
++                    spinner.style.display = 'block';
+ 
+                     function checkVideo() {
+                         fetch(videoUrl, { method: 'HEAD' })
+@@ -172,18 +174,20 @@
+                 </script>
+             {% elif "self.add" in previous_code %}
+                 <img id="result-image" src="" alt="Image">
+-                <a href="{{ MEDIA_URL }}{{ class_name }}.png" class="download-btn" download>Download</a>
+-                <p id="loading-message">Generating image...</p>
++                <a id="download-image" href="" class="download-btn" download>Download</a>
++                <p id="loading-message" style="display: none;">Generating image...</p>
+ 
+                 <script>
+                     const imageUrl = "{{ MEDIA_URL }}{{ class_name }}.png";
+                     const imageElement = document.getElementById('result-image');
+                     const loadingMessage = document.getElementById('loading-message');
+-                    const downloadButton = document.querySelector('.download-btn');
++                    const downloadImage = document.getElementById('download-image');
++                    const spinner = document.getElementById('spinner');
+ 
+ 
+                     imageElement.style.display = 'none';
+-                    downloadButton.style.display = 'none';
++                    downloadImage.style.display = 'none';
++                    spinner.style.display = 'block';
+ 
+ 
+                     function checkImage() {
+@@ -191,9 +195,10 @@
+                             .then(res => {
+                                 if (res.ok) {
+                                     imageElement.src = imageUrl;
++                                    downloadImage.href = imageUrl;
+                                     loadingMessage.style.display = 'none';
+                                     imageElement.style.display = 'block';
+-                                    downloadButton.style.display = 'block';
++                                    downloadImage.style.display = 'block';
+                                 } else {
+                                     setTimeout(checkImage, 2000);
+                                 }
+@@ -208,6 +213,40 @@
+             {% else %}
+                 <p>No output available</p>
+             {% endif %}
++
++
++            {% if task_id %}
++                <div id="statusBox">Task queued...</div>
++                <script>
++                    const taskStatusUrlTemplate = "{% url 'task-status' 'TASK_ID_PLACEHOLDER' %}";
++                    const taskId = "{{ task_id }}";
++                    function pollStatus(id) {
++                        const url = taskStatusUrlTemplate.replace('TASK_ID_PLACEHOLDER', id);
++                        fetch(url)
++                            .then(res => res.json())
++                            .then(data => {
++                                const statusBox = document.getElementById('statusBox');
++                                if (data.status === 'queued') {
++                                    statusBox.textContent = 'Task is queued...';
++                                } else if (data.status === 'running') {
++                                    statusBox.textContent = 'Task is running...';
++                                } else if (data.status === 'done') {
++                                    statusBox.textContent = '✅ Task completed.';
++                                    return;
++                                } else if (data.status === 'failed') {
++                                    statusBox.textContent = '❌ Task failed.';
++                                    return;
++                                }
++                                setTimeout(() => pollStatus(id), 2000);
++                            })
++                            .catch(() => {
++                                document.getElementById('statusBox').textContent = '';
++                                // setTimeout(() => pollStatus(id), 2000);
++                            });
++                    }
++                    pollStatus(taskId);
++                </script>
++            {% endif %}
+         </div>
+     </div>
+ 

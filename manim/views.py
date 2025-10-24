@@ -15,6 +15,7 @@ from .utils import *
 from .cache_utils import *
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django_q.tasks import async_task
 
 from .models import Code 
 
@@ -27,12 +28,13 @@ import docker
 
 import traceback
 
+from django_q.models import OrmQ, Task
 
 
 
-
-def run_manim_command(image_name, base_dir, class_name):
+def run_manim_command(image_name, base_dir, media_name):
     client = docker.from_env()
+    container = None  # Initialize container to None
 
     user_code = 'user_code.py'
     
@@ -43,7 +45,7 @@ def run_manim_command(image_name, base_dir, class_name):
     }
     
     # Define the command with the appropriate paths
-    docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{class_name}"
+    docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{media_name}"
 
     # Resource limits
     mem_limit = "512m"     # 512MB memory
@@ -51,7 +53,7 @@ def run_manim_command(image_name, base_dir, class_name):
     pids_limit = 64        # max processes
 
     # Timeout in seconds for long-running jobs
-    timeout_seconds = 120   # adjust based on your rendering needs
+    timeout_seconds = 300   # adjust based on your rendering needs
     
     try:
         # Run container detached
@@ -69,25 +71,20 @@ def run_manim_command(image_name, base_dir, class_name):
             security_opt=["no-new-privileges"],
             read_only=False,
             tmpfs={"/tmp": "rw,size=128m"},
-            remove=False                  # auto-remove container when done
+            remove=False                  # do not auto-remove, we'll do it manually
         )
 
-        start_time = time.time()
-        while True:
-            container.reload()
-            status = container.status
-            if status in ["exited", "dead"]:
-                break
-            if time.time() - start_time > timeout_seconds:
-                container.kill()
-                print("Container timed out and was killed!")
-                break
-            time.sleep(1)
+        # Wait for the container to finish, with a timeout
+        result = container.wait(timeout=timeout_seconds)
+        exit_code = result.get('StatusCode', -1)
 
         # Get logs
         logs = container.logs().decode()
         print("=== CONTAINER LOGS ===")
         print(logs)
+
+        if exit_code != 0:
+            print(f"Container exited with non-zero status code: {exit_code}")
 
     except docker.errors.ContainerError as e:
         print(f"Container failed: {e}")
@@ -97,22 +94,20 @@ def run_manim_command(image_name, base_dir, class_name):
         print(f"Unexpected error: {e}")
     finally:
         if container:
-
-            # Remove the container
             try:
                 container.remove(force=True)
             except Exception as e:
-                return f"Error removing container: {str(e)}"
+                print(f"Error removing container: {e}")
     
     return logs
 
 
 
-def run_docker_command(class_name):
+def run_docker_command(media_name):
     image_name = 'manimcommunity/manim'
     base_dir = os.path.join(settings.BASE_DIR)  
     try:
-        run_manim_command(image_name, base_dir, class_name)
+        run_manim_command(image_name, base_dir, media_name)
         result_message = ''
 
     except Exception as e:
@@ -157,6 +152,8 @@ def validate_user_input(user_input):
  
  
 
+import uuid
+
 
 
 def execute_code(request):
@@ -184,26 +181,34 @@ def execute_code(request):
 
         previous_code = code
         #save code to cache
-        save_to_cache(previous_code)
+        # save_to_cache(previous_code)
 
         # find class name
         class_name = find_class_name(code) # we need this because the resultant video is saved in a folder named after class name. 
 
         print(f'class name: {class_name}')
 
-        result_message = run_docker_command(class_name)
+        random_id = uuid.uuid4().hex[:8]
+        media_name = f"{class_name}_{random_id}"
+        print(f'media_name: {media_name}')
 
-        print(f'previous code:{previous_code}')        
+        task_id = async_task(run_docker_command, media_name)
+        print('Docker task started asynchronously')
+        print(f'task id: {task_id}')
+        result_message = ""
+
+        # print(f'previous code:{previous_code}')        
 
         #after HTTP request
         context = {'result_message':result_message,
                    'previous_code': previous_code,
                    'MEDIA_URL': settings.MEDIA_URL,
-                   'class_name':class_name,
+                   'media_name':media_name,
                    'placeholder': False,
                    'saved_codes':saved_codes,
                    'request': request,
                    'current_code_name':current_code_name,
+                   'task_id':task_id,
                 }
         return render(request, 'manim/manim.html',context)  
          
@@ -357,3 +362,27 @@ def get_code_name(request):
         return JsonResponse({"status": "success", "message": "Code name set successfully", "result": result})
 
     return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
+
+
+
+from django_q.models import OrmQ, Task
+
+def get_task_status(task_id):
+    # 1. Completed or failed
+    if Task.objects.filter(id=task_id).exists():
+        task = Task.objects.get(id=task_id)
+        return "done" if task.success else "failed"
+
+    # 2. Still queued
+    if OrmQ.objects.filter(payload__contains=task_id).exists():
+        return "queued"
+
+    # 3. Neither queued nor done → must be processing
+    return "processing"
+
+
+
+
+def task_status_view(request, task_id):
+    status = get_task_status(str(task_id))
+    return JsonResponse({'status': status})

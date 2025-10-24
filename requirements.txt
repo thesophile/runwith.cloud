@@ -9,5 +9,4 @@ sqlparse==0.5.1
 urllib3==2.2.2
 gunicorn
 whitenoise
-
-
+django-q2==1.8.0
