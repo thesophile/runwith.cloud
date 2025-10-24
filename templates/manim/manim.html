@@ -161,6 +161,7 @@
                                     downloadVideo.href = videoUrl;
                                     downloadVideo.style.display = 'block';
                                     loadingMessageVideo.style.display = 'none';
+                                    spinner.style.display = 'none';
                                 } else {
                                     setTimeout(checkVideo, 2000);
                                 }
@@ -199,6 +200,7 @@
                                     loadingMessage.style.display = 'none';
                                     imageElement.style.display = 'block';
                                     downloadImage.style.display = 'block';
+                                    spinner.style.display = 'none';
                                 } else {
                                     setTimeout(checkImage, 2000);
                                 }
