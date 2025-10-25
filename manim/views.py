@@ -25,12 +25,10 @@ from django_q.models import OrmQ, Task
 
 
 
-def run_manim_command(image_name, base_dir, media_name):
+def run_manim_command(image_name, base_dir, media_name, code_filename):
     client = docker.from_env()
     container = None  # Initialize container to None
 
-    user_code = 'user_code.py'
-    
     # Define the volumes
     volumes = {
         f"{base_dir}/manim/python_code_files": {'bind': '/mnt/code', 'mode': 'ro'},
@@ -38,7 +36,7 @@ def run_manim_command(image_name, base_dir, media_name):
     }
     
     # Define the command with the appropriate paths
-    docker_command = f"manim -ql /mnt/code/{user_code} -o /mnt/output/{media_name}"
+    docker_command = f"manim -ql /mnt/code/{code_filename} -o /mnt/output/{media_name}"
 
     # Resource limits
     mem_limit = "512m"     # 512MB memory
@@ -96,11 +94,28 @@ def run_manim_command(image_name, base_dir, media_name):
 
 
 
-def run_docker_command(media_name):
+def run_docker_command(media_name, code):
     image_name = 'manimcommunity/manim'
-    base_dir = os.path.join(settings.BASE_DIR)  
+    base_dir = os.path.join(settings.BASE_DIR)
+    
+    # Create a unique file for this specific task
+    code_dir = os.path.join(settings.BASE_DIR, 'manim', 'python_code_files')
+    os.makedirs(code_dir, exist_ok=True)
+    
+    # Use media_name to ensure the python file is as unique as the output
+    code_filename = f"{media_name}.py"
+    code_filepath = os.path.join(code_dir, code_filename)
+
     try:
-        logs = run_manim_command(image_name, base_dir, media_name)
+        # Write the code to the unique file
+        with open(code_filepath, 'w') as f:
+            f.write(code)
+
+        logs = run_manim_command(image_name, base_dir, media_name, code_filename)
+        
+        # Clean up the code file after execution
+        os.remove(code_filepath)
+
         # On success, return the logs. Django-Q will save this as the task result.
         return logs
     except Exception as e:
@@ -114,6 +129,10 @@ def run_docker_command(media_name):
         print("---- FULL TRACE FOR LOG ----")
         print(full_tb)
         return result_message
+    finally:
+        # Ensure cleanup happens even if the command fails
+        if os.path.exists(code_filepath):
+            os.remove(code_filepath)
 
 
 
@@ -165,11 +184,11 @@ def execute_code(request):
 
         #save the code as a python file 
         code = request.POST.get('code', '')
-        python_file = save_python_code_to_file(code) #in utils.py
+        # python_file = save_python_code_to_file(code) #in utils.py - NO LONGER NEEDED HERE
 
         previous_code = code
         #save code to cache
-        # save_to_cache(previous_code)
+        save_to_cache(previous_code)
 
         # find class name
         class_name = find_class_name(code) # we need this because the resultant video is saved in a folder named after class name. 
@@ -182,7 +201,7 @@ def execute_code(request):
 
         # The hook is removed by only passing the target function and its arguments.
         # This is the correct call for your use case.
-        task_id = async_task(run_docker_command, media_name)
+        task_id = async_task(run_docker_command, media_name, code)
         print('Docker task started asynchronously')
         print(f'task id: {task_id}')
         result_message = ""

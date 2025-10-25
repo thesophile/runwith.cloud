@@ -71,27 +71,6 @@ def delete_old_files(media_dir):
                 # No other directory to deal with, so pass 
                 pass
 
-def save_python_code_to_file(code):
-    # Define the directory where Python files will be saved
-    app_dir = os.path.join(settings.BASE_DIR, 'manim')
-    save_dir = os.path.join(app_dir, 'python_code_files')
-    os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
-
-    # Generate a unique filename for the Python file
-    filename = os.path.join(save_dir, 'user_code.py')
-
-    try:
-        # Write the user's Python code to the file
-        with open(filename, 'w') as file:
-            file.write(code)
-        print('code saved as python file')
-    except Exception as e:
-        print(f'Failed to save file: {e}')
-    
-    print(f'code length:{len(code)}')
-
-    return filename
-
 def check_file_exists(class_name):
 
     media_dir = os.path.join(settings.BASE_DIR, 'media')
