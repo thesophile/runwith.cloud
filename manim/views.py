@@ -1,34 +1,27 @@
  
 
-from django.shortcuts import render, redirect
-from django.conf import settings
-from io import StringIO
-import sys
 import os
-import subprocess
-import re
-import shutil
-from datetime import datetime, timedelta
-import time
-from django.http import JsonResponse
-from .utils import *
-from .cache_utils import *
-from django.views.decorators.csrf import csrf_exempt
+import docker
+import traceback
 import json
-from django_q.tasks import async_task
+import ast
+import uuid
 
 from .models import Code 
 
+from .utils import *
+from .cache_utils import *
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
-import subprocess
-import os
-import docker
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
-import traceback
-
+from django_q.tasks import async_task
 from django_q.models import OrmQ, Task
+
+
+
 
 
 
@@ -107,9 +100,9 @@ def run_docker_command(media_name):
     image_name = 'manimcommunity/manim'
     base_dir = os.path.join(settings.BASE_DIR)  
     try:
-        run_manim_command(image_name, base_dir, media_name)
-        result_message = ''
-
+        logs = run_manim_command(image_name, base_dir, media_name)
+        # On success, return the logs. Django-Q will save this as the task result.
+        return logs
     except Exception as e:
         result_message = (
             "Error executing shell command:\n"
@@ -120,10 +113,7 @@ def run_docker_command(media_name):
         print(result_message)
         print("---- FULL TRACE FOR LOG ----")
         print(full_tb)
-
-
-    return result_message    
-
+        return result_message
 
 
 
@@ -133,7 +123,6 @@ def run_docker_command(media_name):
 
 
 
-import ast
 
 current_code_name = None
 
@@ -152,7 +141,6 @@ def validate_user_input(user_input):
  
  
 
-import uuid
 
 
 
@@ -192,6 +180,8 @@ def execute_code(request):
         media_name = f"{class_name}_{random_id}"
         print(f'media_name: {media_name}')
 
+        # The hook is removed by only passing the target function and its arguments.
+        # This is the correct call for your use case.
         task_id = async_task(run_docker_command, media_name)
         print('Docker task started asynchronously')
         print(f'task id: {task_id}')
@@ -240,48 +230,7 @@ def save_new_code(request):
         # Handle case where name is not provided (optional)
     return redirect('manim_home')  # Redirect back to execute page after saving
 
-## Old save function
-# def save_current_code(request):
-#     if request.method == 'POST' and request.POST.get('form_type') == 'save_current':
-#         print('save button clicked')
-#         new_code_text = request.POST.get('hidden_code_current')
-#         save_to_cache(new_code_text)
-#         print(new_code_text)
-#         current_code_name = get_current_code_name()
-#         print(f'current_code_name:{current_code_name}')
-#         if current_code_name:
-#             # Save the code with the entered name
-#             Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
-#             print('code saved')
-#             #save code to display locally
-             
-#             # return redirect('home')  # Redirect to home page or wherever you want
-#         else:
-             
-#             print('current_code_name not defined')
     
-#     return redirect('manim_home')  # Redirect back to execute page after saving
-
-# @csrf_exempt
-# def save_current_code(request):
-#     print('save button clicked')
-#     new_code_text = request.POST.get('code_text')
-#     save_to_cache(new_code_text)
-#     print(new_code_text)
-#     current_code_name = get_current_code_name()
-#     print(f'current_code_name:{current_code_name}')
-#     if current_code_name:
-#         # Save the code with the entered name
-#         Code.objects.filter(user=request.user, name=current_code_name).update(code_text=new_code_text)
-#         print('code saved')
-#         #save code to display locally
-        
-#         # return redirect('home')  # Redirect to home page or wherever you want
-#     else:
-        
-#         print('current_code_name not defined')
-    
-#     return redirect('manim_home')  # Redirect back to execute page after saving   
          
 
 @csrf_exempt  # testing
@@ -311,12 +260,7 @@ def save_current_code(request):
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
-    
-
-# def get_code(request, code_id):
-#     code = Code.objects.get(id=code_id, user=request.user)
-#     return JsonResponse({'code_text': code.code_text})
-
+ 
 def get_code_text(request, code_id):
     code = Code.objects.get(id=code_id)
     set_current_code_name(code.name)
@@ -365,7 +309,6 @@ def get_code_name(request):
 
 
 
-from django_q.models import OrmQ, Task
 
 def get_task_status(task_id):
     # 1. Completed or failed
@@ -379,9 +322,7 @@ def get_task_status(task_id):
 
     # 3. Neither queued nor done → must be processing
     return "processing"
-
-
-
+ 
 
 def task_status_view(request, task_id):
     status = get_task_status(str(task_id))
